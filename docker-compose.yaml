@@ -32,11 +32,12 @@ services:
   db:
     image: postgres:15
     container_name: real_estate_db
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=realestate
-      - POSTGRES_USER=realestateuser
+      - POSTGRES_DB=real_estate_dev
+      - POSTGRES_USER=real_estate_user
       - POSTGRES_PASSWORD=realestatepass
     ports:
       - "5432:5432"
