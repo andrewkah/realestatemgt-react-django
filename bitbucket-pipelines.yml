@@ -27,10 +27,9 @@ pipelines:
 
 definitions:
   services:
-    mysql:
-      image: mysql:8.0
+    postgres:
+      image: postgres:15
       environment:
-        MYSQL_DATABASE: real_estate_dev_db
-        MYSQL_USER: real_estate_user
-        MYSQL_PASSWORD: StrongPasswordHere
-        MYSQL_ROOT_PASSWORD: rootpassword
+        POSTGRES_DB: test_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
