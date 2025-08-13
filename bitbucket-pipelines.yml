@@ -1,0 +1,40 @@
+image: python:3.12
+
+pipelines:
+  default:
+    - step:
+        name: Backend Tests
+        services:
+          - postgres
+        caches:
+          - pip
+        script:
+          - cd backend
+          - pip install --upgrade pip
+          - pip install -r requirements.txt
+          - export DB_NAME=test_db
+          - export DB_USER=postgres
+          - export DB_PASSWORD=postgres
+          - export DB_HOST=127.0.0.1
+          - export DB_PORT=5432
+          - python manage.py makemigrations --check --dry-run
+          - python manage.py migrate
+          - python manage.py test
+    - step:
+        name: Frontend Build
+        image: node:20
+        caches:
+          - node
+        script:
+          - cd frontend
+          - npm ci
+          - npm run build
+
+definitions:
+  services:
+    postgres:
+      image: postgres:15
+      environment:
+        POSTGRES_DB: test_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
