@@ -12,11 +12,6 @@ pipelines:
           - cd backend
           - pip install --upgrade pip
           - pip install -r requirements.txt
-          - export DB_NAME=test_db
-          - export DB_USER=postgres
-          - export DB_PASSWORD=postgres
-          - export DB_HOST=127.0.0.1
-          - export DB_PORT=5432
           - python manage.py makemigrations --check --dry-run
           - python manage.py migrate
           - python manage.py test
@@ -32,9 +27,10 @@ pipelines:
 
 definitions:
   services:
-    postgres:
-      image: postgres:15
+    mysql:
+      image: mysql:8.0
       environment:
-        POSTGRES_DB: test_db
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
+        MYSQL_DATABASE: real_estate_dev_db
+        MYSQL_USER: real_estate_user
+        MYSQL_PASSWORD: StrongPasswordHere
+        MYSQL_ROOT_PASSWORD: rootpassword
