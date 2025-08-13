@@ -14,7 +14,7 @@ pip-tools==7.5.0
 pure_eval==0.2.3
 Pygments==2.19.2
 pyproject_hooks==1.2.0
-pywin32==311
+pywin32==306
 pyzmq==27.0.1
 rpds-py==0.27.0
 setuptools==80.9.0
