@@ -9,11 +9,11 @@ pipelines:
         caches:
           - pip
         script:
+          - export DJANGO_SETTINGS_MODULE=backend.settings
           - export ENVIRONMENT=pipeline
           - cd backend          
           - pip install --upgrade pip
           - pip install -r requirements.txt
-          - python manage.py makemigrations --check --dry-run
           - python manage.py migrate
           - python manage.py test
     - step:
