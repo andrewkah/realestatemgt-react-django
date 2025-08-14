@@ -4,10 +4,9 @@ stages:
   - frontend-build
 
 variables:
-  # Backend 
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  DJANGO_SETTINGS_MODULE: backend.settings
+  # Backend
   ENVIRONMENT: pipeline
+  PYTHONUNBUFFERED: 1
 
 backend-install:
   stage: backend-install
@@ -19,10 +18,6 @@ backend-install:
     - cd backend
     - python manage.py migrate
     - python manage.py collectstatic --noinput
-  artifacts:
-    paths:
-      - backend
-    expire_in: 1h
 
 backend-test:
   stage: backend-test
@@ -42,8 +37,4 @@ frontend-build:
     - npm ci
   script:
     - npm run build
-  artifacts:
-    paths:
-      - frontend/dist
-    expire_in: 1h
 
