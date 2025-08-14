@@ -16,8 +16,9 @@ backend-install:
     - python -m pip install --upgrade pip
     - pip install -r backend/requirements.txt
   script:
-    - python backend/manage.py migrate
-    - python backend/manage.py collectstatic --noinput
+    - cd backend
+    - python manage.py migrate
+    - python manage.py collectstatic --noinput
   artifacts:
     paths:
       - backend
@@ -29,8 +30,9 @@ backend-test:
   dependencies:
     - backend-install
   script:
-    - python backend/manage.py makemigrations --check --dry-run
-    - python backend/manage.py test
+    - cd backend
+    - python manage.py makemigrations --check --dry-run
+    - python manage.py test
 
 frontend-build:
   stage: frontend-build
