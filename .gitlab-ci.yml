@@ -1,0 +1,47 @@
+stages:
+  - backend-install
+  - backend-test
+  - frontend-build
+
+variables:
+  # Backend
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  DJANGO_SETTINGS_MODULE: backend.settings
+  ENVIRONMENT: pipeline
+
+backend-install:
+  stage: backend-install
+  image: python:3.12
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install -r backend/requirements.txt
+  script:
+    - python backend/manage.py migrate
+    - python backend/manage.py collectstatic --noinput
+  artifacts:
+    paths:
+      - backend
+    expire_in: 1h
+
+backend-test:
+  stage: backend-test
+  image: python:3.12
+  dependencies:
+    - backend-install
+  script:
+    - python backend/manage.py makemigrations --check --dry-run
+    - python backend/manage.py test
+
+frontend-build:
+  stage: frontend-build
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist
+    expire_in: 1h
+
