@@ -81,12 +81,9 @@ ENVIRONMENT = env('ENVIRONMENT', default='local')
 if ENVIRONMENT == 'pipeline':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': env('DB_NAME', default='test_db'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='postgres'),
-            'HOST': env('DB_HOST', default='postgres'),  
-            'PORT': env('DB_PORT', default='5432'),
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'test_db.sqlite3',
+            # 'NAME': ':memory:',  # In-memory database - fastest for tests
         }
     }
 else:  # local
