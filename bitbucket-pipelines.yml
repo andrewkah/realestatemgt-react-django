@@ -12,8 +12,8 @@ pipelines:
           - cd backend
           - export DJANGO_SETTINGS_MODULE=realestatemgt.settings
           - export ENVIRONMENT=pipeline
-          - apt-get update && apt-get install -y default-mysql-client
-          - until mysqladmin ping -h mysql -u root -proot --silent; do echo "Waiting for MySQL..."; sleep 2; done
+          - apt-get update && apt-get install -y postgresql-client
+          - until pg_isready -h postgres -p 5432 -U postgres; do echo "Waiting for postgres..."; sleep 2; done
           - pip install --upgrade pip
           - pip install -r requirements.txt
           - python manage.py migrate
@@ -30,10 +30,10 @@ pipelines:
 
 definitions:
   services:
-    mysql:
-      image: mysql:8.0
+    postgres:
+      image: postgres:15
       environment:
-        MYSQL_DATABASE: real_estate_test_db
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_USER: root
-        MYSQL_PASSWORD: Today123
+        POSTGRES_DB: test_db
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_HOST_AUTH_METHOD: trust

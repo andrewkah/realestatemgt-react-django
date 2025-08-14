@@ -81,12 +81,12 @@ ENVIRONMENT = env('ENVIRONMENT', default='local')
 if ENVIRONMENT == 'pipeline':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': env('DB_NAME', default='real_estate_test_db'),
-            'USER': env('DB_USER', default='root'),
-            'PASSWORD': env('DB_PASSWORD', default='Today123'),
-            'HOST': env('DB_HOST', default='localhost'),  # Use localhost instead
-            'PORT': env('DB_PORT', default='3390'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='test_db'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='postgres'),
+            'HOST': env('DB_HOST', default='postgres'),  
+            'PORT': env('DB_PORT', default='5432'),
         }
     }
 else:  # local
