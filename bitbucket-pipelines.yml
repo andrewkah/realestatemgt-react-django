@@ -12,8 +12,12 @@ pipelines:
           - cd backend
           - export DJANGO_SETTINGS_MODULE=realestatemgt.settings
           - export ENVIRONMENT=pipeline
-          - apt-get update && apt-get install -y postgresql-client
-          - until pg_isready -h postgres -p 5432 -U postgres; do echo "Waiting for postgres..."; sleep 2; done
+          - echo "Environment variables:"
+          - env | grep -E "(DB_|POSTGRES_)"
+          - echo "Checking network connectivity:"
+          - ping -c 3 postgres || echo "Ping failed"
+          - echo "Checking if postgres service is running:"
+          - nslookup postgres || echo "DNS lookup failed"
           - pip install --upgrade pip
           - pip install -r requirements.txt
           - python manage.py migrate
