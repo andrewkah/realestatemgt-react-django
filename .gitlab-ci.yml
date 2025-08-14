@@ -4,7 +4,7 @@ stages:
   - frontend-build
 
 variables:
-  # Backend
+  # Backend 
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   DJANGO_SETTINGS_MODULE: backend.settings
   ENVIRONMENT: pipeline
