@@ -9,9 +9,9 @@ pipelines:
         caches:
           - pip
         script:
-          - export DJANGO_SETTINGS_MODULE=backend.settings
+          - cd backend
+          - export DJANGO_SETTINGS_MODULE=realestatemgt.settings
           - export ENVIRONMENT=pipeline
-          - cd backend          
           - pip install --upgrade pip
           - pip install -r requirements.txt
           - python manage.py migrate
