@@ -13,6 +13,7 @@
     "test:coverage-ui": "vitest --ui --coverage.enabled=true"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
     "dayjs": "^1.11.13",
