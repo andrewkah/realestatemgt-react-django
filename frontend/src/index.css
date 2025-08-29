@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -12,6 +13,27 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+   /* Light Mode Defaults */
+  --color-base-background: #f8fafc; /* slate-50 */
+  --color-base-text: #1e293b;     /* slate-800 */
+  --color-card-background: #ffffff;
+  --color-card-text: #1e293b;
+  --color-border: #e2e8f0;       /* slate-200 */
+}
+
+html.dark {
+  /* Dark Mode Overrides */
+  --color-base-background: #0f172a; /* slate-900 */
+  --color-base-text: #f1f5f9;     /* slate-100 */
+  --color-card-background: #1e293b; /* slate-800 */
+  --color-card-text: #f1f5f9;
+  --color-border: #334155;       /* slate-700 */
+}
+
+/* Apply base styles using the CSS variables */
+body {
+  @apply bg-slate-50 text-slate-800;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
 }
 
 a {
