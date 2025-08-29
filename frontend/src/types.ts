@@ -13,6 +13,7 @@ export interface User {
 }
 
 export interface JwtPayload {
+  exp?: number;
   is_active?: number;
   user_id?: string;
   username?: string;

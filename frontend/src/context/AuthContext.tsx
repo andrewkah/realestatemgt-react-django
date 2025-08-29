@@ -11,4 +11,11 @@ export interface AuthContextType {
   setAuthTokens: (tokens: AuthTokens | null) => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  login: () => {},
+  logout: () => {},
+  authTokens: null,
+  user: null,
+  setUser: () => {},
+  setAuthTokens: () => {},});
