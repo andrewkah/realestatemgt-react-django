@@ -1,28 +1,28 @@
 // import { useState } from 'react'
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AuthProvider, { ProtectedRoute } from './context/AuthProvider';
 import { ThemeProvider } from './context/ThemeProvider';
+import { LoginForm } from './auth/Login';
+import { RegisterForm } from './auth/Register';
 
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <ThemeProvider>
-          <Routes>
-            <Route path="/" element={<h1>Home</h1>} />
-            <Route path="/login" element={<h1>Login</h1>} />
-            <Route path="/register" element={<h1>Register</h1>} />
+    <AuthProvider>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/" element={<h1>Home</h1>} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm/>} />
 
-            {/* Require Authentication */}
-            <Route element={<ProtectedRoute />}>
-              {/* Add the routes that need authentication */}
-            </Route>
-          </Routes>
-        </ThemeProvider>
-      </AuthProvider>
-    </Router>
+          {/* Require Authentication */}
+          <Route element={<ProtectedRoute />}>
+            {/* Add the routes that need authentication */}
+          </Route>
+        </Routes>
+      </ThemeProvider>
+    </AuthProvider>
     // <>
     //   <div>
     //     <a href="https://vite.dev" target="_blank">

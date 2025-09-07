@@ -1,7 +1,12 @@
+import { mtConfig } from "@material-tailwind/react";
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class", // THIS IS CRUCIAL FOR CLASS-BASED DARK MODE
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@material-tailwind/react/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       // You can extend your theme here, e.g., custom colors, fonts
@@ -23,5 +28,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [mtConfig],
 };
