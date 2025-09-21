@@ -1,4 +1,4 @@
-import { mtConfig } from "@material-tailwind/react";
+// import { mtConfig } from "@material-tailwind/react";
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class", // THIS IS CRUCIAL FOR CLASS-BASED DARK MODE
@@ -28,5 +28,7 @@ export default {
       },
     },
   },
-  plugins: [mtConfig],
+  plugins: [
+    // mtConfig
+    ],
 };

@@ -12,9 +12,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       return storedTheme as ThemeMode;
     }
     return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+      window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark";
   });
 
   // Apply the theme class to the document's root element

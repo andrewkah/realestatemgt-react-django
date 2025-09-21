@@ -5,6 +5,8 @@ import AuthProvider, { ProtectedRoute } from './context/AuthProvider';
 import { ThemeProvider } from './context/ThemeProvider';
 import { LoginForm } from './auth/Login';
 import { RegisterForm } from './auth/Register';
+import Layout from './components/Layout';
+import { ForgotPasswordForm } from './auth/ForgotPassword';
 
 
 function App() {
@@ -12,9 +14,18 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
+          {/* Routes with layout */}
+          <Route
+            path="/"
+            element={
+              <Layout>
+                <h1>Home</h1>
+              </Layout>
+            }
+          />
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/register" element={<RegisterForm/>} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/forgot-password" element={<ForgotPasswordForm />} />
 
           {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
