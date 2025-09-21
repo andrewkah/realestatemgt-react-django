@@ -1,5 +1,5 @@
 // src/components/Layout.tsx
-import React, { type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle"; // Import the ThemeToggle component
 
