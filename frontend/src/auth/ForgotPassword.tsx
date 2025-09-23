@@ -1,7 +1,3 @@
-"use client";
-
-import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,41 +10,34 @@ import {
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Building2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
-import { Label } from "@/components/ui/label";
+// import { Label } from "@/components/ui/label";
+import z from "zod";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const formSchema = z.object({
+  email: z.email({ error: "Please enter a valid email address" }),
+});
+type FormFields = z.infer<typeof formSchema>;
 
 export function ForgotPasswordForm() {
-  const [formData, setFormData] = useState({
-    email: "",
-  });
-  const [error, setError] = useState("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  })
   const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+  // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-    const { email } = formData;
-
-    if (!email) {
-      setError("Please enter your email address");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address");
-      setIsLoading(false);
-      return;
-    }
-
+  const onSubmit: SubmitHandler<FormFields> = async (values: z.infer<typeof formSchema>) => {
     try {
       // TODO: Replace with actual Django API call
-      console.log("Password reset request:", { email });
+      console.log("Password reset request:", { values });
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -56,9 +45,7 @@ export function ForgotPasswordForm() {
       setSuccess(true);
     } catch (err) {
       console.log(err);
-      setError("Failed to send reset email. Please try again.");
-    } finally {
-      setIsLoading(false);
+      form.setError("root",{message: "Failed to send reset email. Please try again."});
     }
   };
 
@@ -76,7 +63,7 @@ export function ForgotPasswordForm() {
               Check your email
             </h1>
             <p className="text-muted-foreground">
-              We've sent a password reset link to {formData.email}
+              We've sent a password reset link to {form.watch("email")}
             </p>
           </div>
 
@@ -93,7 +80,7 @@ export function ForgotPasswordForm() {
                 >
                   Try again
                 </Button>
-                <Button variant="link" className="w-full text-accent hover:text-accent/80">
+                <Button variant="link" className="w-full  text-accent hover:text-accent/80">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to sign in
                 </Button>
@@ -132,38 +119,57 @@ export function ForgotPasswordForm() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <Alert
-                  variant="destructive"
-                  // className="rounded-none border-b-0 border-l-4 border-r-0 border-t-0 border-green-500 bg-green-500/10 font-medium text-green-500"
-                >
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="h-11"
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-11"
-                disabled={isLoading}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                {isLoading ? "Sending reset link..." : "Send reset link"}
-              </Button>
-            </form>
+                {form.formState.errors.root && (
+                  <Alert
+                    variant="destructive"
+                    className="rounded-none border-b-0 border-l-4 border-r-0 border-t-0 border-red-500 bg-red-500/10 font-medium text-red-500"
+                  >
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {form.formState.errors.root?.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            className="h-11"
+                            placeholder="Enter your email address"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full h-11"
+                  disabled={
+                    form.formState.isSubmitting
+                  }
+                >
+                  {form.formState.isSubmitting
+                    ? "Sending reset link..."
+                    : "Send reset link"}
+                </Button>
+              </form>
+            </Form>
 
             <div className="mt-6 text-center">
               <Button
