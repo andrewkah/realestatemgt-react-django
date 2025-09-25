@@ -30,7 +30,7 @@ class CustomUserManager(BaseUserManager):
         return super().get_by_natural_key(username)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)    
     is_active = models.BooleanField(default=True)
