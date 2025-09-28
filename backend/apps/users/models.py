@@ -1,6 +1,8 @@
-import uuid
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -8,7 +10,7 @@ class CustomUserManager(BaseUserManager):
 
     def _create_user(self, email, password, **extra_fields):
         if not email:
-            raise ValueError("The Email flied must be set")
+            raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -28,6 +30,12 @@ class CustomUserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
     def get_by_natural_key(self, username):
         return super().get_by_natural_key(username)
+    def email_validator(self, email):
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ValueError(_("Please enter a valid email address"))
+        
 
 class User(AbstractBaseUser, PermissionsMixin):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -35,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -65,3 +74,11 @@ def update_user_profile(sender, instance, created, **kwargs):
         
 models.signals.post_save.connect(create_user_profile, sender=User)
 models.signals.post_save.connect(update_user_profile, sender=User)
+
+
+class OneTimePassword(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6, unique=True)
+    
+    def __str__(self):
+        return f"{self.user.username}-passcode"
