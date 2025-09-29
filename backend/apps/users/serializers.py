@@ -3,6 +3,8 @@ from django.contrib import admin
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
+from rest_framework.exceptions import AuthenticationFailed
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,3 +53,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         
         return user
+
+class LoginSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=255, min_length=6)
+    password = serializers.CharField(max_length=68, write_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'access_token', 'refresh_token')
+        
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        password = attrs.get('password', '')
+        request = self.context.get('request')
+        user = authenticate(request=request, email=email, password=password)
+        
+        if not user.is_verified:
+            raise AuthenticationFailed("Invalid credentials, try again")
+        
+        user_tokens = user.tokens()
+        return {
+            'email': user.email,
+            'username': user.username,
+            'access_token': str(user_tokens.get('access')),
+            'refresh_token': str(user_tokens.get('refresh')),
+        }

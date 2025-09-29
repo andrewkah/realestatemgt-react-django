@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from apps.users.models import User, Profile
-from apps.users.serializers import RegisterSerializer, MyTokenObtainPairSerializer
+from apps.users.models import OneTimePassword, User, Profile
+from apps.users.serializers import LoginSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
@@ -29,6 +29,31 @@ class RegisterView(generics.CreateAPIView):
                 'data':user,
                 "message":f'Hello {user['username']} thanks for signing up'
             }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class VerifyUserEmail(generics.GenericAPIView):
+    permission_classes = ([AllowAny])
+    def post(self, request, *args, **kwargs):
+        otp_code = request.data.get('otp')
+        try:
+            user = OneTimePassword.objects.get(otp=otp_code)
+            if not user.user.is_verified:
+                user.user.is_verified = True
+                user.user.is_active = True
+                user.user.save()
+                user.is_active = False
+                user.save()
+                return Response({'message': 'Email verified'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Email already verified'}, status=status.HTTP_204_NO_CONTENT)
+        except OneTimePassword.DoesNotExist:
+            return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginUserView(generics.CreateAPIView):
+    permission_classes = ([AllowAny])
+    serializer_class = LoginSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Create your views here.

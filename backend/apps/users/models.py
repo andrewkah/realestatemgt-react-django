@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
+from rest_framework_simplejwt.tokens import RefreshToken
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
 
@@ -51,6 +52,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -79,6 +87,7 @@ models.signals.post_save.connect(update_user_profile, sender=User)
 class OneTimePassword(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, unique=True)
+    is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return f"{self.user.username}-passcode"
