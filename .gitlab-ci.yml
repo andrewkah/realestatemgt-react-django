@@ -5,6 +5,9 @@ stages:
 variables:
   ENVIRONMENT: pipeline
   PYTHONUNBUFFERED: 1
+  SECRET_KEY: $SECRET_KEY
+  EMAIL_HOST_USER: $EMAIL_HOST_USER
+  EMAIL_HOST_PASSWORD: $EMAIL_HOST_PASSWORD
 
 backend:
   stage: backend
