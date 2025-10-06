@@ -3,6 +3,7 @@ from apps.users.models import User, Profile
 from django.contrib import admin
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -92,17 +93,18 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
     
     class Meta:
+        model=User
         fields=['email']
     
     def validate(self, attrs):
         userEmail = attrs.get('email', '')
         if User.objects.filter(email=userEmail).exists():
             user = User.objects.get(email = userEmail)
-            uid64 = urlsafe_base64_encode(force_bytes(user.id))
+            uuid64 = urlsafe_base64_encode(force_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
             request = self.context.get('request')
             site_domain = get_current_site(request).domain
-            relative_url = reverse('password-reset-confirm', kwargs={"uid64": uid64, "token": token})
+            relative_url = reverse('password-reset-confirm', kwargs={"uuid64": uuid64, "token": token})
             absurl = f"http://{site_domain}{relative_url}"
             email_body = f"Hello, use the link below to reset your password\n{absurl}"
             data={
@@ -115,28 +117,46 @@ class PasswordResetSerializer(serializers.Serializer):
         
 class SetNewPasswordSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=100, min_length=6, write_only=True)
-    confirmPassword = serializers.CharField(max_length=100, min_length=6, write_only=True)
+    confirm_password = serializers.CharField(max_length=100, min_length=6, write_only=True)
     uuid64 = serializers.CharField(write_only=True)
     token = serializers.CharField(write_only=True)
     
     class Meta:
-        fields=['password', 'confirmPassword', 'uid64', 'token']
+        model=User
+        fields=['password', 'confirm_password', 'uuid64', 'token']
         
     def validate(self, attrs):
         try:
             token = attrs.get('token')
-            uid64 = attrs.get('uid64')
+            uuid64 = attrs.get('uuid64')
             password = attrs.get('password')
-            confirmPassword = attrs.get('confirm_password')
+            confirm_password = attrs.get('confirm_password')
             
-            user_id = force_str(urlsafe_base64_decode(uid64))
+            user_id = force_str(urlsafe_base64_decode(uuid64))
             user=User.objects.get(id = user_id)
             if not PasswordResetTokenGenerator().check_token(user, token):
                 raise AuthenticationFailed("Reset link is invalid or has expired", 401)
-            if password != confirmPassword:
+            if password != confirm_password:
                 raise AuthenticationFailed("Passwords do not match")
             user.set_password(password)
             user.save()
             return user
         except Exception as e:
             return AuthenticationFailed(e, 401)
+
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField()
+    default_error_message={
+        'bad_token': {'Token is invalid or expired!'}
+    }
+    
+    def validate(self, attrs):
+        self.token = attrs.get('refresh_token')
+        return attrs
+    
+    def save(self, **kwargs):
+        try:
+            token = RefreshToken(self.token)
+            token.blacklist()
+        except TokenError:
+            return self.fail('bad_token')

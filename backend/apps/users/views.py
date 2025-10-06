@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import OneTimePassword, User, Profile
-from .serializers import LoginSerializer, PasswordResetSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer
+from .serializers import LoginSerializer, LogoutSerializer, PasswordResetSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
@@ -44,6 +44,7 @@ class PasswordResetRequest(generics.GenericAPIView):
             return Response({"message": "A link has been sent to your email to reset your password"}, status=status.HTTP_200_OK)
 
 class PasswordResetConfirm(generics.GenericAPIView):
+    permission_classes = ([AllowAny])
     def get(self, request, uuid64, token):
         try:
             user_id = force_str(urlsafe_base64_decode(uuid64))
@@ -55,6 +56,7 @@ class PasswordResetConfirm(generics.GenericAPIView):
             return Response({'message': 'The token is Invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
         
 class SetNewPassword(generics.GenericAPIView):
+    permission_classes = ([AllowAny])
     serializer_class = SetNewPasswordSerializer
     def patch(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -86,6 +88,16 @@ class LoginUserView(generics.CreateAPIView):
         if serializer.is_valid(raise_exception=True):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutUserView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LogoutSerializer
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Successfully logged out'}, status=status.HTTP_204_NO_CONTENT)
 
 # Create your views here.
 @api_view(['GET', 'POST'])
