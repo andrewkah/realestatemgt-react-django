@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import type { JwtPayload } from "../types";
 
 // call the base url from the env file.
-const BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8000/apps";
+const BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8000/api/v1/";
 
 
 const useAxios = (): AxiosInstance => {
@@ -15,6 +15,7 @@ const useAxios = (): AxiosInstance => {
   const axiosInstance = axios.create({
     baseURL: BASE_URL,
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${authTokens?.access}`,
     },
   });
@@ -51,7 +52,7 @@ const useAxios = (): AxiosInstance => {
       }
 
       console.log("Refreshing token...");
-      const response = await axios.post(`${BASE_URL}/token/refresh/`, {
+      const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {
         refresh: authTokens.refresh,
       });
 
@@ -81,7 +82,7 @@ const useAxios = (): AxiosInstance => {
 
         if (authTokens?.refresh) {
           try {
-            const response = await axios.post(`${BASE_URL}/token/refresh/`, {
+            const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {
               refresh: authTokens.refresh,
             });
 
