@@ -34,8 +34,8 @@ class CustomUserManager(BaseUserManager):
         try:
             validate_email(email)
         except ValidationError:
-            raise ValueError(_("Please enter a valid email address"))
-        
+            raise ValueError("Please enter a valid email address")
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -61,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     bio = models.TextField(blank=True)
