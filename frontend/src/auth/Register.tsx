@@ -24,6 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useAxios from "@/utils/useAxios";
+import { Link } from "react-router-dom";
 
 const formSchema = z
   .object({
@@ -46,6 +48,7 @@ const formSchema = z
 type FormFields = z.infer<typeof formSchema>;
 
 export function RegisterForm() {
+  localStorage.clear();
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,19 +62,37 @@ export function RegisterForm() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const axiosInstance = useAxios();
   const onSubmit: SubmitHandler<FormFields> = async (
     values: z.infer<typeof formSchema>
   ) => {
     console.log(values);
+    const { firstName, lastName, email, password, confirmPassword } = values;
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await axiosInstance
+        .post("/auth/register/", {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          confirm_password: confirmPassword,
+        })
+        .then((response) => {
+          console.log("Response:", response);
+          // redirect to one time password page.
+          <Link to="/register/otp" />;
+        })
+        .catch((e) => {
+          console.log("Error:", e);
+          form.setError("root", {
+            message: `Error: ${e}`,
+          });
+        });
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Registration successful");
-      form.setError("root", {
-        message: "Invalid email or password. Please try again.",
-      });
     } catch (error) {
       form.setError("root", {
-        message: "Registration failed. Please try again.",
+        message: `Registration failed: ${error}`,
       });
       console.log(error);
     }
@@ -84,9 +105,9 @@ export function RegisterForm() {
     return { strength: "strong", color: "text-green-600" };
   };
 
- const password = form.watch("password");
- const confirmPassword = form.watch("confirmPassword");
- const passwordStrength = getPasswordStrength(password || "");
+  const password = form.watch("password");
+  const confirmPassword = form.watch("confirmPassword");
+  const passwordStrength = getPasswordStrength(password || "");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
@@ -213,7 +234,10 @@ export function RegisterForm() {
                             variant="ghost"
                             size="sm"
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setShowPassword(!showPassword);
+                            }}
                           >
                             {showPassword ? (
                               <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -254,9 +278,10 @@ export function RegisterForm() {
                             variant="ghost"
                             size="sm"
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setShowConfirmPassword(!showConfirmPassword);
+                            }}
                           >
                             {showConfirmPassword ? (
                               <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -295,6 +320,10 @@ export function RegisterForm() {
                             <Button
                               variant="link"
                               className="px-0 h-auto text-primary hover:text-primary/80"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                console.log("Terms of Service");
+                              }}
                             >
                               Terms of Service
                             </Button>{" "}
@@ -302,6 +331,10 @@ export function RegisterForm() {
                             <Button
                               variant="link"
                               className="px-0 h-auto text-primary hover:text-primary/80"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                console.log("Privacy Policy");
+                              }}
                             >
                               Privacy Policy
                             </Button>
@@ -316,9 +349,7 @@ export function RegisterForm() {
                 <Button
                   type="submit"
                   className="w-full h-11"
-                  disabled={
-                    form.formState.isSubmitting
-                  }
+                  disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting
                     ? "Creating account..."

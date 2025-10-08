@@ -10,11 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Building2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
-// import { Label } from "@/components/ui/label";
 import z from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import useAxios from "@/utils/useAxios";
 
 const formSchema = z.object({
   email: z.email({ error: "Please enter a valid email address" }),
@@ -29,23 +29,27 @@ export function ForgotPasswordForm() {
     },
   })
   const [success, setSuccess] = useState(false);
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
+  const axiosInstance = useAxios();
 
   const onSubmit: SubmitHandler<FormFields> = async (values: z.infer<typeof formSchema>) => {
     try {
       // TODO: Replace with actual Django API call
       console.log("Password reset request:", { values });
-
+      await axiosInstance.post("/auth/password-reset/", { email: values.email }).then((response) => {
+        console.log("Response:", response);
+        setSuccess(true);
+      }).catch((e) => {
+        console.log("Error:", e)
+        form.setError("root", {
+          message: `Error: ${e}`,
+        });
+      });
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setSuccess(true);
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      
     } catch (err) {
       console.log(err);
-      form.setError("root",{message: "Failed to send reset email. Please try again."});
+      form.setError("root",{message: `An error occurred: ${err}`});
     }
   };
 
