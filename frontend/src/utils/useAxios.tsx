@@ -7,8 +7,8 @@ import dayjs from "dayjs";
 import type { JwtPayload } from "../types";
 
 // call the base url from the env file.
-const BASE_URL = process.env.BACKEND_BASE_URL || "http://localhost:8000/api/v1/";
-
+const BASE_URL =
+  import.meta.env.VITE_BASE_URL;
 
 const useAxios = (): AxiosInstance => {
   const { authTokens, setUser, setAuthTokens } = useContext(AuthContext);
@@ -18,8 +18,16 @@ const useAxios = (): AxiosInstance => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authTokens?.access}`,
     },
+    withCredentials: false,
   });
   axiosInstance.interceptors.request.use(async (req) => {
+    // Don't attach token for auth endpoints
+    if (
+      req.url?.includes("/auth/login/") ||
+      req.url?.includes("/auth/token/refresh/")
+    ) {
+      return req;
+    }
     // If no tokens, skip refresh logic
     if (!authTokens?.access) {
       return req;
@@ -82,9 +90,12 @@ const useAxios = (): AxiosInstance => {
 
         if (authTokens?.refresh) {
           try {
-            const response = await axios.post(`${BASE_URL}/auth/token/refresh/`, {
-              refresh: authTokens.refresh,
-            });
+            const response = await axios.post(
+              `${BASE_URL}/auth/token/refresh/`,
+              {
+                refresh: authTokens.refresh,
+              }
+            );
 
             localStorage.setItem("authTokens", JSON.stringify(response.data));
             setAuthTokens(response.data);

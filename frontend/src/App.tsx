@@ -7,6 +7,8 @@ import { LoginForm } from './auth/Login';
 import { RegisterForm } from './auth/Register';
 import Layout from './components/Layout';
 import { ForgotPasswordForm } from './auth/ForgotPassword';
+import { NotFound } from './auth/NotFound';
+import { Dashboard } from './pages/Dashboard';
 
 
 function App() {
@@ -26,9 +28,12 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+          {/* <Route path='/logout' element={ <Logo} /> */}
+          <Route path='*' element={ <NotFound/>} />
 
           {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard/>}/>
             {/* Add the routes that need authentication */}
           </Route>
         </Routes>

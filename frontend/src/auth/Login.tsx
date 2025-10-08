@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,6 +24,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { AuthContext } from "@/context/AuthContext";
+import axios from "axios";
+import { type User, type AuthTokens } from '../types';
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.email({ error: "Please enter a valid email address" }),
@@ -36,6 +40,7 @@ const formSchema = z.object({
 type FormFields = z.infer<typeof formSchema>;
 
 export function LoginForm() {
+  let navigate = useNavigate();
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,46 +50,8 @@ export function LoginForm() {
     },
   });
   const [showPassword, setShowPassword] = useState(false);
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setIsLoading(true);
-  //   const { email, password } = formData;
-
-  //   // Basic validation
-  //   if (!email || !password) {
-  //     setError("Please fill in all fields");
-  //     setIsLoading(false);
-  //     return;
-  //   }
-
-  //   if (!email.includes("@")) {
-  //     setError("Please enter a valid email address");
-  //     setIsLoading(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     // TODO: Replace with actual Django API call
-  //     console.log("Login attempt:", { email, password });
-
-  //     // Simulate API call
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     // Handle successful login here
-  //     console.log("Login successful");
-  //   } catch (error) {
-  //     console.log(error);
-  //     setError("Invalid email or password. Please try again.");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const { login } = useContext(AuthContext);
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const onSubmit: SubmitHandler<FormFields> = async (
     values: z.infer<typeof formSchema>
@@ -93,21 +60,34 @@ export function LoginForm() {
 
     try {
       // TODO: Replace with actual Django API call
-      // console.log("Login attempt:", { email, password });
-
+      console.log("Login attempt:", { email, password });
+      await axios
+        .post(
+          `${BASE_URL}/auth/login/`,
+          { email, password },
+          { headers: { "Content-Type": "application/json" } }
+        )
+        .then((response) => {
+          console.log("response", response);
+          const { user, tokens }: { user: User; tokens: AuthTokens } = response.data as { user: User; tokens: AuthTokens };
+          login(user, tokens);
+          navigate("/dashboard");
+        })
+        .catch((e) => {
+          console.log("Error:", e);
+          form.setError("root", {
+            message: `Error: ${e}`,
+          });
+        });
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Handle successful login here
-      console.log(email, password);
-      form.setError("root", {
-        message: "Invalid email or password. Please try again.",
-      });
       console.log("Login successful");
     } catch (error) {
       console.log(error);
       form.setError("root", {
-        message: "Invalid email or password. Please try again.",
+        message: `An error occurred:${error}`,
       });
     }
   };
@@ -193,7 +173,7 @@ export function LoginForm() {
                             variant="ghost"
                             size="sm"
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={(e) => {e.preventDefault(); setShowPassword(!showPassword)}}
                           >
                             {showPassword ? (
                               <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -207,7 +187,7 @@ export function LoginForm() {
                     </FormItem>
                   )}
                 />
-                
+
                 <div className="flex items-center justify-between">
                   <FormField
                     control={form.control}
@@ -237,6 +217,7 @@ export function LoginForm() {
                   <Button
                     variant="link"
                     className="px-0 text-accent hover:text-accent/80"
+                    onClick={(e) => { e.preventDefault(); console.log("Forgot password")}}
                   >
                     Forgot password?
                   </Button>

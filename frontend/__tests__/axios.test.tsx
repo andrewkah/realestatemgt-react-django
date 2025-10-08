@@ -83,7 +83,7 @@ describe("Axios Instance with Interceptors", () => {
     // Setup axios mock
     mockAxios = new MockAdapter(axios);
 
-    // Create axios instance with interceptors (your actual implementation)
+    // Create axios instance with interceptors
     axiosInstance = axios.create({
       baseURL: BASE_URL,
       headers: {
