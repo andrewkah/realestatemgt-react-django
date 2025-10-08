@@ -4,7 +4,7 @@ export interface AuthTokens {
 }
 
 export interface User {
-  id: string;
+  id: number;
   email: string;
   username: string;
   first_name: string;

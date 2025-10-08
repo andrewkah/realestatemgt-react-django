@@ -11,10 +11,13 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     if (storedTheme) {
       return storedTheme as ThemeMode;
     }
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
+    // return window.matchMedia &&
+    //   window.matchMedia("(prefers-color-scheme: light)").matches
+    //   ? "light"
+    //   : "dark";
+    
+    // Always default to light
+    return "light";
   });
 
   // Apply the theme class to the document's root element
