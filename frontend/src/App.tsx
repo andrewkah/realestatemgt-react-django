@@ -9,6 +9,8 @@ import Layout from './components/Layout';
 import { ForgotPasswordForm } from './auth/ForgotPassword';
 import { NotFound } from './auth/NotFound';
 import { Dashboard } from './pages/Dashboard';
+import VerfiyEmail from './auth/VerfiyEmail';
+import { ResetPasswordForm } from './auth/ResetPassword';
 
 
 function App() {
@@ -28,7 +30,8 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-          {/* <Route path='/logout' element={ <Logo} /> */}
+          <Route path="/verify-email" element={<VerfiyEmail />} />
+          <Route path="/reset-password" element={<ResetPasswordForm/>}/>
           <Route path='*' element={ <NotFound/>} />
 
           {/* Require Authentication */}

@@ -40,7 +40,7 @@ const formSchema = z.object({
 type FormFields = z.infer<typeof formSchema>;
 
 export function LoginForm() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -173,7 +173,10 @@ export function LoginForm() {
                             variant="ghost"
                             size="sm"
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={(e) => {e.preventDefault(); setShowPassword(!showPassword)}}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setShowPassword(!showPassword);
+                            }}
                           >
                             {showPassword ? (
                               <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -217,7 +220,10 @@ export function LoginForm() {
                   <Button
                     variant="link"
                     className="px-0 text-accent hover:text-accent/80"
-                    onClick={(e) => { e.preventDefault(); console.log("Forgot password")}}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/forgot-password");
+                    }}
                   >
                     Forgot password?
                   </Button>
@@ -241,6 +247,7 @@ export function LoginForm() {
               <Button
                 variant="link"
                 className="px-0 text-accent hover:text-accent/80"
+                onClick={() => navigate("/register")}
               >
                 Sign up
               </Button>

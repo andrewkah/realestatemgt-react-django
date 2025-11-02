@@ -24,8 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useAxios from "@/utils/useAxios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const formSchema = z
   .object({
@@ -49,6 +49,7 @@ type FormFields = z.infer<typeof formSchema>;
 
 export function RegisterForm() {
   localStorage.clear();
+  const navigate = useNavigate();
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,25 +63,28 @@ export function RegisterForm() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const axiosInstance = useAxios();
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const onSubmit: SubmitHandler<FormFields> = async (
     values: z.infer<typeof formSchema>
   ) => {
     console.log(values);
     const { firstName, lastName, email, password, confirmPassword } = values;
     try {
-      await axiosInstance
-        .post("/auth/register/", {
+      await axios
+        .post(`${BASE_URL}/auth/register/`, {
           first_name: firstName,
           last_name: lastName,
           email: email,
           password: password,
           confirm_password: confirmPassword,
-        })
+        },{ headers: { "Content-Type": "application/json" } })
         .then((response) => {
           console.log("Response:", response);
-          // redirect to one time password page.
-          <Link to="/register/otp" />;
+          if (response.data.success) {
+            // redirect to one time password page.
+            navigate('/verify-email');
+          }
         })
         .catch((e) => {
           console.log("Error:", e);
@@ -376,6 +380,7 @@ export function RegisterForm() {
               <Button
                 variant="link"
                 className="px-0 text-accent hover:text-accent/80"
+                onClick={() => navigate("/login")}
               >
                 Sign in
               </Button>

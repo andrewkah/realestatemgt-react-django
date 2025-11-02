@@ -14,7 +14,8 @@ import z from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import useAxios from "@/utils/useAxios";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const formSchema = z.object({
   email: z.email({ error: "Please enter a valid email address" }),
@@ -29,13 +30,12 @@ export function ForgotPasswordForm() {
     },
   })
   const [success, setSuccess] = useState(false);
-  const axiosInstance = useAxios();
+  const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<FormFields> = async (values: z.infer<typeof formSchema>) => {
     try {
-      // TODO: Replace with actual Django API call
       console.log("Password reset request:", { values });
-      await axiosInstance.post("/auth/password-reset/", { email: values.email }).then((response) => {
+      await axios.post("/auth/password-reset/", { email: values.email }).then((response) => {
         console.log("Response:", response);
         setSuccess(true);
       }).catch((e) => {
@@ -84,7 +84,13 @@ export function ForgotPasswordForm() {
                 >
                   Try again
                 </Button>
-                <Button variant="link" className="w-full  text-accent hover:text-accent/80">
+                <Button
+                  variant="link"
+                  className="px-0 text-accent hover:text-accent/80"
+                  onClick={(e) => {
+                    e.preventDefault(); navigate("/login")
+                  }}
+                >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to sign in
                 </Button>
@@ -164,9 +170,7 @@ export function ForgotPasswordForm() {
                 <Button
                   type="submit"
                   className="w-full h-11"
-                  disabled={
-                    form.formState.isSubmitting
-                  }
+                  disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting
                     ? "Sending reset link..."
@@ -178,7 +182,11 @@ export function ForgotPasswordForm() {
             <div className="mt-6 text-center">
               <Button
                 variant="link"
-                className="text-accent hover:text-accent/80"
+                className="px-0 text-accent hover:text-accent/80"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/login");
+                }}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to sign in
