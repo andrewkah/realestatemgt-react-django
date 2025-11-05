@@ -36,6 +36,7 @@ function App() {
 
           {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
+            
             <Route path="/dashboard" element={<Dashboard/>}/>
             {/* Add the routes that need authentication */}
           </Route>

@@ -117,7 +117,7 @@ export function LoginForm() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="w-100 ">
+          <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}

@@ -130,14 +130,14 @@ export function RegisterForm() {
         </div>
 
         {/* Registration Form */}
-        <Card className="p-8 w-120 shadow-lg">
+        <Card className="p-8 border-none shadow-lg">
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl text-center">Get started</CardTitle>
             <CardDescription className="text-center">
               Join thousands of real estate professionals
             </CardDescription>
           </CardHeader>
-          <CardContent className="w-full">
+          <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -320,28 +320,30 @@ export function RegisterForm() {
                         </FormControl>
                         <div className="space-y-0 leading-none">
                           <FormLabel className="cursor-pointer text-sm">
-                            I agree to the{" "}
-                            <Button
-                              variant="link"
-                              className="px-0 h-auto text-primary hover:text-primary/80"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                console.log("Terms of Service");
-                              }}
-                            >
-                              Terms of Service
-                            </Button>{" "}
-                            and{" "}
-                            <Button
-                              variant="link"
-                              className="px-0 h-auto text-primary hover:text-primary/80"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                console.log("Privacy Policy");
-                              }}
-                            >
-                              Privacy Policy
-                            </Button>
+                            <span className="block sm:inline">
+                              I agree to the{" "}
+                              <Button
+                                variant="link"
+                                className="px-0 h-auto text-primary hover:text-primary/80 text-sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  console.log("Terms of Service");
+                                }}
+                              >
+                                Terms of Service
+                              </Button>{" "}
+                              and{" "}
+                              <Button
+                                variant="link"
+                                className="px-0 h-auto text-primary hover:text-primary/80 text-sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  console.log("Privacy Policy");
+                                }}
+                              >
+                                Privacy Policy
+                              </Button>
+                            </span>
                           </FormLabel>
                           <FormMessage />
                         </div>
