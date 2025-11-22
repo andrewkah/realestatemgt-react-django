@@ -1,17 +1,17 @@
 // import { useState } from 'react'
-import './App.css'
+import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import AuthProvider, { ProtectedRoute } from './context/AuthProvider';
-import { ThemeProvider } from './context/ThemeProvider';
-import { LoginForm } from './auth/Login';
-import { RegisterForm } from './auth/Register';
-import Layout from './components/Layout';
-import { ForgotPasswordForm } from './auth/ForgotPassword';
-import { NotFound } from './auth/NotFound';
-import { Dashboard } from './pages/Dashboard';
-import VerfiyEmail from './auth/VerfiyEmail';
-import { ResetPasswordForm } from './auth/ResetPassword';
-
+import AuthProvider, { ProtectedRoute } from "./context/AuthProvider";
+import { ThemeProvider } from "./context/ThemeProvider";
+import { LoginForm } from "./auth/Login";
+import { RegisterForm } from "./auth/Register";
+import Layout from "./components/Layout";
+import { ForgotPasswordForm } from "./auth/ForgotPassword";
+import { NotFound } from "./auth/NotFound";
+import { Dashboard } from "./pages/Dashboard";
+import VerfiyEmail from "./auth/VerfiyEmail";
+import { ResetPasswordForm } from "./auth/ResetPassword";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
@@ -19,26 +19,20 @@ function App() {
       <ThemeProvider>
         <Routes>
           {/* Routes with layout */}
-          <Route
-            path="/"
-            element={
-              <Layout>
-                <h1>Home</h1>
-              </Layout>
-            }
-          />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/verify-email" element={<VerfiyEmail />} />
-          <Route path="/reset-password" element={<ResetPasswordForm/>}/>
-          <Route path='*' element={ <NotFound/>} />
+          <Route path="/reset-password" element={<ResetPasswordForm />} />
+          <Route path="*" element={<NotFound />} />
 
           {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
-            
-            <Route path="/dashboard" element={<Dashboard/>}/>
-            {/* Add the routes that need authentication */}
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              {/* Add the routes that need authentication */}
+            </Route>
           </Route>
         </Routes>
       </ThemeProvider>
@@ -68,4 +62,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

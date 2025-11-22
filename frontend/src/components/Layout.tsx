@@ -1,17 +1,17 @@
 // src/components/Layout.tsx
-import { type ReactNode } from "react";
-import { Link } from "react-router-dom";
+// import { type ReactNode } from "react";
+import { Link, Outlet } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { AppSidebar } from "@/components/AppSidebar";
 
-interface LayoutProps {
-  children: ReactNode;
-}
+// interface LayoutProps {
+//   children: ReactNode;
+// }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -57,7 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
         </header>
 
         {/* Main Content Area */}
-        <div className="flex-grow p-5">{children}</div>
+        <div className="flex-grow p-5"><Outlet/></div>
 
         {/* Footer */}
         <footer className="h-12 text-center pt-2.5 text-sm text-gray-600 dark:text-gray-400 border-t border-border">

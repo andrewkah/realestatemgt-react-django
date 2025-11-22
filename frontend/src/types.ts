@@ -20,7 +20,7 @@ export interface JwtPayload {
   email?: string;
 }
 
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
 
 export interface ThemeContextType {
   mode: ThemeMode;

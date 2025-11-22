@@ -1,5 +1,5 @@
 import { createContext} from "react";
 import type { ThemeContextType} from "../types";
 
-export const ThemeContext = createContext<ThemeContextType>({ mode: "light", toggleMode: () => {}, setMode: () => {} });
+export const ThemeContext = createContext<ThemeContextType>({ mode: "system", toggleMode: () => {}, setMode: () => {} });
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { ThemeMode } from "../types";
 import { ThemeContext } from "./ThemeContext";
 interface ThemeProviderProps {
@@ -24,6 +24,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   useEffect(() => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
+    if (mode === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      root.classList.add(systemTheme);
+      return;
+    }
     root.classList.add(mode);
     localStorage.setItem("theme", mode);
   }, [mode]);
@@ -42,3 +47,12 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     </ThemeContext.Provider>
   );
 };
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined)
+    throw new Error("useTheme must be used within a ThemeProvider");
+
+  return context;
+}
