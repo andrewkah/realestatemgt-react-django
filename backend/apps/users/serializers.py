@@ -14,11 +14,13 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from .utils import send_normal_email
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "email", "username", "is_active", "is_staff")
         read_only_fields = ("id", "is_active", "is_staff")
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -31,11 +33,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["last_name"] = user.profile.last_name
         token["is_active"] = user.is_active
         return token
-    
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ("first_name", "last_name", "bio", "location", "image", "birth_date")
+
 
 class UserWithProfileSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -83,6 +87,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
+
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=6, write_only=True)
     user = UserWithProfileSerializer(read_only=True)
@@ -100,12 +105,21 @@ class LoginSerializer(serializers.ModelSerializer):
         password = attrs.get("password", "")
         request = self.context.get("request")
         user = authenticate(request=request, email=email, password=password)
-        
-        if not user.is_verified:
+        # If authentication failed, `authenticate` returns None — handle that
+        if user is None:
+            raise AuthenticationFailed("Invalid credentials, try again")
+
+        # Ensure user has `is_verified` attribute and is verified (1 = verified, 0 = not)
+        is_verified = getattr(user, "is_verified", 0)
+        try:
+            verified = bool(int(is_verified))
+        except Exception:
+            verified = bool(is_verified)
+        if not verified:
             raise AuthenticationFailed("Account not verified, try again")
 
         user_tokens = user.tokens()
-        return {         
+        return {
             "user": UserWithProfileSerializer(user).data,
             "tokens": user_tokens,
             # "refresh_token": str(user_tokens.get("refresh")),
