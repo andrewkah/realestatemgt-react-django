@@ -87,9 +87,9 @@ export function RegisterForm() {
           }
         })
         .catch((e) => {
-          console.log("Error:", e);
+          console.log("Error:", e.response.data);
           form.setError("root", {
-            message: `Error: ${e}`,
+            message: `Error: ${e.response.data.detail}`,
           });
         });
       // await new Promise((resolve) => setTimeout(resolve, 1000));

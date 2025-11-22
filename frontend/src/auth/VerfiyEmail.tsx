@@ -64,10 +64,10 @@ export default function VerfiyEmail() {
           }
         })
         .catch((e) => {
-          console.log("Error:", e);
-          form.setError("root", {
-            message: `Error: ${e}`,
-          });
+         console.log("Error:", e.response.data);
+         form.setError("root", {
+           message: `Error: ${e.response.data.detail}`,
+         });
         });
       // Simulate API call
       // await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -74,9 +74,9 @@ export function LoginForm() {
           navigate("/dashboard");
         })
         .catch((e) => {
-          console.log("Error:", e);
+          console.log("Error:", e.response.data);
           form.setError("root", {
-            message: `Error: ${e}`,
+            message: `Error: ${e.response.data.detail}`,
           });
         });
       // Simulate API call

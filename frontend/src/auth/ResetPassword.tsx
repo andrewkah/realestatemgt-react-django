@@ -72,9 +72,9 @@ export function ResetPasswordForm() {
           }
         })
         .catch((err) => {
-          console.log("Error:", err);
+          console.log("Error:", err.response.data);
           form.setError("root", {
-            message: `Error: ${err}`,
+            message: `Error: ${err.response.data.detail}`,
           });
         });
     } catch (error) {
