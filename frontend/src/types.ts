@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 export interface AuthTokens {
   access: string;
   refresh: string;
@@ -26,4 +28,8 @@ export interface ThemeContextType {
   mode: ThemeMode;
   toggleMode: () => void;
   setMode: (mode: ThemeMode) => void;
+}
+export interface SponsorProps {
+  icon: JSX.Element;
+  name: string;
 }
