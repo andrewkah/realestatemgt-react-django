@@ -1,8 +1,12 @@
 import NavBar from "@/components/NavBar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import bg from "@/assets/images/luxury-house-real-estate.jpg";
-import type { SponsorProps } from "@/types";
+import type { FeatureProps, SponsorProps, statsProps } from "@/types";
 import { Radar } from "lucide-react";
+import pilot from "@/assets/images/pilot.png";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MedalIcon, MapIcon, PlaneIcon, GiftIcon } from "@/components/Icons";
+
 const Hero = () => {
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
@@ -75,27 +79,150 @@ const sponsors: SponsorProps[] = [
 ];
 const Sponsors = () => {
   return (
-    <section className="landing-container container pt-24 sm:py-32" id="sponsors">
+    <section
+      className="landing-container container pt-24 sm:py-32"
+      id="sponsors"
+    >
       <h2 className="text-center text-md lg:text-xl font-bold mb-8 text-primary">
         Investors and founders
       </h2>
       <div className="flex flex-wrap justify-center gap-4 md:gap-8">
         {sponsors.map(({ icon, name }: SponsorProps) => (
-          <div key={name} className="flex items-center gap-1 text-muted-foreground/60">
+          <div
+            key={name}
+            className="flex items-center gap-1 text-muted-foreground/60"
+          >
             <span>{icon}</span>
             <h3 className="text-xl font-bold">{name}</h3>
           </div>
         ))}
       </div>
     </section>
-  )
-}
+  );
+};
+
+const stats: statsProps[] = [
+  { quantity: "2.7K+", description: "Users" },
+  { quantity: "1.8K+", description: "Subscribers" },
+  { quantity: "112", description: "Downloads" },
+  { quantity: "4", description: "Products" },
+];
+const About = () => {
+  return (
+    <section id="about" className="landing-container container py-24 sm:py-32">
+      <div className="bg-muted/50 border rounded-lg py-12">
+        <div className="px-6 flex flex-col-reverse md:flex-row gap-8 md:gap-12">
+          <img
+            src={pilot}
+            alt=""
+            className="w-[300px] object-contain rounded-lg"
+          />
+          <div className="bg-green-0 flex flex-col justify-between">
+            <div className="pb-6">
+              <h2 className="text-3xl md:text-4xl font-bold">
+                <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+                  About{" "}
+                </span>
+                Company
+              </h2>
+              <p className="text-xl text-muted-foreground mt-4">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit
+                amet, consectetur adipiscing elit.
+              </p>
+            </div>
+            <section id="statistics">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                {stats.map(({ quantity, description }: statsProps) => (
+                  <div key={description} className="space-y-2 text-center">
+                    <h2 className="text-3xl sm:tex-4xl font-bold">
+                      {quantity}
+                    </h2>
+                    <p className="text-xl text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const features: FeatureProps[] = [
+  {
+    icon: <MedalIcon />,
+    title: "Accessibility",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+  },
+  {
+    icon: <MapIcon />,
+    title: "Community",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+  },
+  {
+    icon: <PlaneIcon />,
+    title: "Scalability",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+  },
+  {
+    icon: <GiftIcon />,
+    title: "Gamification",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+  },
+];
+
+const HowItWorks = () => {
+  return (
+    <section
+      id="howItWorks"
+      className="landing-container container text-center py-24 sm:py-32"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold">
+        How It{" "}
+        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          Works{" "}
+        </span>
+        Step-by-Step Guide
+      </h2>
+      <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
+        dolor pariatur sit!
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {features.map(({ icon, title, description }: FeatureProps) => (
+          <Card key={title} className="bg-muted/50">
+            <CardHeader>
+              <CardTitle className="grid gap-4 place-items-center">
+                {icon}
+                {title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>{description}</CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+};
 export default function LandingPage() {
   return (
     <>
       <NavBar />
       <Hero />
-      <Sponsors/>
+      <Sponsors />
+      <About />
+      <HowItWorks/>
     </>
   );
 }
