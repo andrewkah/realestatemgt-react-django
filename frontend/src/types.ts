@@ -37,8 +37,19 @@ export interface statsProps {
   quantity: string;
   description: string;
 }
-export interface FeatureProps {
+export interface WorkListProps {
   icon: JSX.Element;
   title: string;
   description: string;
+}
+export interface FeatureProps {
+  title: string;
+  description: string;
+  image: string;
+}
+export interface TestimonialProps {
+  image: string;
+name: string;
+userName: string;
+comment: string;
 }

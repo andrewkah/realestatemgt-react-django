@@ -1,11 +1,30 @@
 import NavBar from "@/components/NavBar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import bg from "@/assets/images/luxury-house-real-estate.jpg";
-import type { FeatureProps, SponsorProps, statsProps } from "@/types";
-import { Radar } from "lucide-react";
+import type {
+  FeatureProps,
+  SponsorProps,
+  statsProps,
+  TestimonialProps,
+  WorkListProps,
+} from "@/types";
+import { Building2, Radar } from "lucide-react";
 import pilot from "@/assets/images/pilot.png";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MedalIcon, MapIcon, PlaneIcon, GiftIcon } from "@/components/Icons";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  MedalIcon,
+  MapIcon,
+  PlaneIcon,
+  GiftIcon,
+} from "@/components/Icons";
+import { Badge } from "@/components/ui/badge";
 
 const Hero = () => {
   return (
@@ -154,7 +173,7 @@ const About = () => {
   );
 };
 
-const features: FeatureProps[] = [
+const workList: WorkListProps[] = [
   {
     icon: <MedalIcon />,
     title: "Accessibility",
@@ -200,10 +219,10 @@ const HowItWorks = () => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {features.map(({ icon, title, description }: FeatureProps) => (
+        {workList.map(({ icon, title, description }: WorkListProps) => (
           <Card key={title} className="bg-muted/50">
             <CardHeader>
-              <CardTitle className="grid gap-4 place-items-center">
+              <CardTitle className="grid gap-4 place-items-center text-2xl">
                 {icon}
                 {title}
               </CardTitle>
@@ -215,6 +234,305 @@ const HowItWorks = () => {
     </section>
   );
 };
+import image from "@/assets/images/growth.png";
+import image3 from "@/assets/images/reflecting.png";
+import image4 from "@/assets/images/looking-ahead.png";
+import { ScrollToTop } from "@/components/ScrollTotop";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Pricing } from "@/components/Pricing";
+import { Input } from "@/components/ui/input";
+const features: FeatureProps[] = [
+  {
+    title: "Responsive Design",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    image: image4,
+  },
+  {
+    title: "Intuitive user interface",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    image: image3,
+  },
+  {
+    title: "AI-Powered insights",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    image: image,
+  },
+];
+const featureList: string[] = [
+  "Dark/Light theme",
+  "Reviews",
+  "Features",
+  "Pricing",
+  "Contact form",
+  "Our team",
+  "Responsive design",
+  "Newsletter",
+  "Minimalist",
+];
+const Features = () => {
+  return (
+    <section
+      id="features"
+      className="landing-container container py-24 sm:py-32 space-y-8"
+    >
+      <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
+        Many{" "}
+        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          Great Features
+        </span>
+      </h2>
+      <div className="flex flex-wrap md:justify-center gap-4">
+        {featureList.map((feature: string) => (
+          <div key={feature}>
+            <Badge variant="secondary" className="text-sm">
+              {feature}
+            </Badge>
+          </div>
+        ))}
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {features.map(({ title, description, image }: FeatureProps) => (
+          <Card key={title}>
+            <CardHeader>
+              <CardTitle className="text-2xl">{title}</CardTitle>
+            </CardHeader>
+
+            <CardContent>{description}</CardContent>
+
+            <CardFooter>
+              <img
+                src={image}
+                alt="About feature"
+                className="w-[200px] lg:w-[300px] mx-auto"
+              />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const testimonials: TestimonialProps[] = [
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe",
+    comment: "This landing page is awesome!",
+  },
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe1",
+    comment:
+      "Lorem ipsum dolor sit amet,empor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.",
+  },
+
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe2",
+    comment:
+      "Lorem ipsum dolor sit amet,exercitation. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.",
+  },
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe3",
+    comment:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+  },
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe4",
+    comment:
+      "Lorem ipsum dolor sit amet, tempor incididunt  aliqua. Ut enim ad minim veniam, quis nostrud.",
+  },
+  {
+    image: "https://github.com/shadcn.png",
+    name: "John Doe React",
+    userName: "@john_Doe5",
+    comment:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  },
+];
+const Testimonals = () => {
+  return (
+    <section
+      className="landing-container container py-24 sm:py-32"
+      id="testimonials"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold">
+        Discover Why
+        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          {" "}
+          People Love{" "}
+        </span>
+        This Landing Page
+      </h2>
+      <p className="text-xl text-muted-foreground pt-4 pb-8">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non unde error
+        facere hic reiciendis illo
+      </p>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 sm:block columns-2 lg:columns-3 lg:gap-6 mx-auto space-y-4 lg:space-y-6">
+        {testimonials.map(
+          ({ image, name, userName, comment }: TestimonialProps) => (
+            <Card key={userName} className="bg-muted/50">
+              <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                <Avatar>
+                  <AvatarImage src={image} alt="" />
+                  <AvatarFallback>OM</AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-xl">{name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {userName}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="text-sm">{comment}</CardContent>
+            </Card>
+          )
+        )}
+      </div>
+    </section>
+  );
+};
+const Newsletter = () => {
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    console.log("Subscribed");
+  };
+  return (
+    <section id="newsletter">
+      <hr className="w-11/12 mx-auto" />
+      <div className="landing-container py-24 sm:py-32">
+        <h3 className="text-center text-4xl md:text-5xl font-bold">
+          Join Our Daily{" "}
+          <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+            Newsletter
+          </span>
+        </h3>
+        <p className="text-xl text-muted-foreground text-center mt-4 mb-8">
+          Lorem ipsum dolor sit amet consectetur.
+        </p>
+        <form
+          action=""
+          className="flex flex-col w-ful md:flex-row md:w-6/12 lg:w-4/12 mx-auto gap-4 md:gap-2"
+          onSubmit={handleSubmit}
+        >
+          <Input
+            placeholder="someone@example.com"
+            className="bg-muted/50 dark:bg-muted/80"
+            aria-label="email"
+          />
+          <Button>Subscribe</Button>
+        </form>
+      </div>
+      <hr className="w-11/12 mx-auto" />
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer id="footer">
+      <section className="landing-container py-24 sm:py-32 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
+        <div className="col-span-full xl:col-span-2">
+          <a
+            rel="noreferer noopener"
+            className="font-bold text-xl flex"
+            href="/"
+          >
+            <Building2 className="mr-2" /> IEstate
+          </a>
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">About</h3>
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Features
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Pricing
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              FAQ
+            </a>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Community</h3>
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Youtube
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Discord
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Twitch
+            </a>
+          </div>
+        </div>
+      </section>
+      <section className="landing-container pb-14 text-center">
+        <h3>
+          &copy; {new Date().getFullYear()} Landing page made by{" "}
+          <a
+            rel="noreferrer noopener"
+            target="_blank"
+            href="https://www.linkedin.com/in/leopoldo-miranda/"
+            className="text-primary transition-all border-primary hover:border-b-2"
+          >
+            IEstate
+          </a>
+        </h3>
+      </section>
+    </footer>
+  );
+};
 export default function LandingPage() {
   return (
     <>
@@ -222,7 +540,13 @@ export default function LandingPage() {
       <Hero />
       <Sponsors />
       <About />
-      <HowItWorks/>
+      <HowItWorks />
+      <Features />
+      <Testimonals />
+      <Pricing />
+      <Newsletter />
+      <Footer/>
+      <ScrollToTop />
     </>
   );
 }
