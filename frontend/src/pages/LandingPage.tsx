@@ -8,8 +8,8 @@ import type {
   TestimonialProps,
   WorkListProps,
 } from "@/types";
-import { Building2, Radar } from "lucide-react";
-import pilot from "@/assets/images/pilot.png";
+import { Building2, MapPin, Radar } from "lucide-react";
+import pilot from "@/assets/images/hero-real-estate-facts-trends.jpeg";
 import {
   Card,
   CardContent,
@@ -21,10 +21,10 @@ import {
 import {
   MedalIcon,
   MapIcon,
-  PlaneIcon,
-  GiftIcon,
+  MagnifierIcon,
+  WalletIcon,
 } from "@/components/Icons";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 
 const Hero = () => {
   return (
@@ -134,7 +134,7 @@ const About = () => {
           <img
             src={pilot}
             alt=""
-            className="w-[300px] object-contain rounded-lg"
+            className="w-[450px] object-contain rounded-lg"
           />
           <div className="bg-green-0 flex flex-col justify-between">
             <div className="pb-6">
@@ -145,11 +145,18 @@ const About = () => {
                 Company
               </h2>
               <p className="text-xl text-muted-foreground mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit
-                amet, consectetur adipiscing elit.
+                We are a real estate platform that aims to provide a seamless
+                and efficient experience for homebuyers and sellers. Our
+                platform utilizes cutting-edge technology to streamline the home
+                buying and selling process, making it easier for users to find
+                their dream home. With a user-friendly interface and a robust
+                backend, we are committed to providing the best possible
+                experience for our users. Our platform is designed to be
+                scalable, secure, and reliable, ensuring that users can trust us
+                with their most important transactions. We are dedicated to
+                building a community that is passionate about real estate and
+                committed to making the home buying and selling process as
+                smooth as possible.
               </p>
             </div>
             <section id="statistics">
@@ -175,28 +182,28 @@ const About = () => {
 
 const workList: WorkListProps[] = [
   {
-    icon: <MedalIcon />,
-    title: "Accessibility",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
-  },
-  {
     icon: <MapIcon />,
-    title: "Community",
+    title: "Select Property",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Select a property that fits your needs and budget. We have a wide range of properties to choose from, including apartments, houses, and villas. Our properties are carefully selected to ensure that you have a great experience.",
   },
   {
-    icon: <PlaneIcon />,
-    title: "Scalability",
+    icon: <MedalIcon />,
+    title: "Select Agent",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Choose an agent that you trust and has experience in the property market. Our agents are trained to help you find the best properties that fit your needs and budget.",
   },
   {
-    icon: <GiftIcon />,
-    title: "Gamification",
+    icon: <MagnifierIcon />,
+    title: "Choose House",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Choose a house that fits your needs and budget. Our houses are carefully selected to ensure that you have a great experience.",
+  },
+  {
+    icon: <WalletIcon />,
+    title: "Pay",
+    description:
+      "Pay securely with your preferred payment method. We accept all major credit cards, as well as PayPal and bank transfers.",
   },
 ];
 
@@ -214,8 +221,8 @@ const HowItWorks = () => {
         Step-by-Step Guide
       </h2>
       <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
-        dolor pariatur sit!
+        Find your dream property with us. We have a wide range of properties to
+        choose from, including apartments, houses, and villas.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -234,57 +241,51 @@ const HowItWorks = () => {
     </section>
   );
 };
-import image from "@/assets/images/growth.png";
-import image3 from "@/assets/images/reflecting.png";
-import image4 from "@/assets/images/looking-ahead.png";
+import image from "@/assets/images/luxury-house-real-estate.jpg";
+import image3 from "@/assets/images/maxresdefault.jpg";
+import image4 from "@/assets/images/residential-real-estate-townhome.jpg";
 import { ScrollToTop } from "@/components/ScrollTotop";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Pricing } from "@/components/Pricing";
 import { Input } from "@/components/ui/input";
-const features: FeatureProps[] = [
+const bestProperties = [
   {
-    title: "Responsive Design",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    title: "residential",
     image: image4,
   },
   {
-    title: "Intuitive user interface",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    title: "max-residential",
     image: image3,
   },
   {
-    title: "AI-Powered insights",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    title: "luxury",
     image: image,
   },
 ];
-const featureList: string[] = [
-  "Dark/Light theme",
-  "Reviews",
-  "Features",
-  "Pricing",
-  "Contact form",
-  "Our team",
-  "Responsive design",
-  "Newsletter",
-  "Minimalist",
-];
-const Features = () => {
+// const featureList: string[] = [
+//   "Dark/Light theme",
+//   "Reviews",
+//   "Features",
+//   "Pricing",
+//   "Contact form",
+//   "Our team",
+//   "Responsive design",
+//   "Newsletter",
+//   "Minimalist",
+// ];
+const BestProperties = () => {
   return (
     <section
-      id="features"
+      id="best-properties"
       className="landing-container container py-24 sm:py-32 space-y-8"
     >
       <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
-        Many{" "}
+        Best{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          Great Features
+          Property Deals
         </span>
       </h2>
-      <div className="flex flex-wrap md:justify-center gap-4">
+      {/* <div className="flex flex-wrap md:justify-center gap-4">
         {featureList.map((feature: string) => (
           <div key={feature}>
             <Badge variant="secondary" className="text-sm">
@@ -292,22 +293,127 @@ const Features = () => {
             </Badge>
           </div>
         ))}
-      </div>
+      </div> */}
+      <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
+        Find the best property deals from our selection of luxury, residential,
+        and max-residential properties. Our deals are carefully curated to
+        provide you with the best possible value for your money. Whether you're
+        looking for a luxurious property to call home or a smart investment
+        opportunity, we've got you covered!
+      </p>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map(({ title, description, image }: FeatureProps) => (
-          <Card key={title}>
-            <CardHeader>
+        {bestProperties.map(({ title, image }) => (
+          <div key={title} className="flex justify-evenly">
+            {/* <CardHeader>
               <CardTitle className="text-2xl">{title}</CardTitle>
-            </CardHeader>
+            </CardHeader> */}
 
-            <CardContent>{description}</CardContent>
+            <img
+              src={image}
+              alt={title}
+              className="max-w-full max-h-full object-cover rounded-lg"
+            />
 
-            <CardFooter>
+            {/* <CardFooter>
               <img
                 src={image}
                 alt="About feature"
                 className="w-[200px] lg:w-[300px] mx-auto"
               />
+            </CardFooter> */}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const featuredProperties: FeatureProps[] = [
+  {
+    title: "Kings Vision Villa",
+    location: "Kampala",
+    price: "$880000",
+    image: image4,
+  },
+  {
+    title: "max-residential",
+    location: "Kampala",
+    price: "$780000",
+    image: image3,
+  },
+  {
+    title: "luxury",
+    location: "Kampala",
+    price: "$680000",
+    image: image,
+  },
+  {
+    title: "luxury",
+    location: "Kampala",
+    price: "$680000",
+    image: image,
+  },
+  {
+    title: "luxury",
+    location: "Kampala",
+    price: "$580000",
+    image: image3,
+  },
+  {
+    title: "luxury",
+    location: "Kampala",
+    price: "$680000",
+    image: image4,
+  },
+];
+const FeaturedProperties = () => {
+  return (
+    <section
+      id="best-properties"
+      className="landing-container container py-24 sm:py-32 space-y-8"
+    >
+      <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
+        Featured{" "}
+        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          Property
+        </span>
+      </h2>
+      <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
+        Our featured properties are a selection of the best luxury, residential,
+        and max-residential properties on the market. Each property has been
+        carefully curated to provide you with the best possible value for your
+        money. Whether you're looking for a luxurious property to call home or a
+        smart investment opportunity, we've got you covered!
+      </p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {featuredProperties.map(({ title, location, price, image }) => (
+          <Card key={title} className="pt-0">
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover rounded-t-xl"
+            />
+
+            <CardDescription>
+              <div className="flex flex-col">
+                <h3 className="text-2xl font-medium">{title}</h3>
+                <div className="flex justify-between px-3">
+                  <span className="flex items-center gap-2">
+                    <MapPin className="text-primary" />
+                    <h4 className="text-md font-bold">{location}</h4>
+                  </span>
+                  <span>{price}</span>
+                </div>
+              </div>
+            </CardDescription>
+
+            <CardFooter className="flex justify-center align-center">
+              <Button
+                variant={"outline"}
+                className="border border-primary rounded-md bg-white"
+              >
+                View Property
+              </Button>
             </CardFooter>
           </Card>
         ))}
@@ -442,15 +548,54 @@ const Newsletter = () => {
 const Footer = () => {
   return (
     <footer id="footer">
-      <section className="landing-container py-24 sm:py-32 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
-        <div className="col-span-full xl:col-span-2">
+      <section className="landing-container py-24 sm:py-32 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-12 gap-y-8">
+        <div className="col-span-full lg:col-span-2 flex flex-col items-start">
           <a
             rel="noreferer noopener"
-            className="font-bold text-xl flex"
+            className="font-bold text-xl flex items-center"
             href="/"
           >
             <Building2 className="mr-2" /> IEstate
           </a>
+          <div className="col-span-full lg:col-span-2 ml-0">
+            <p className="text-lg text-muted-foreground">
+              Our dedicated property managers offer a full property and rental
+              management service for landlords. So you can relax knowing your
+              property is in safe and experienced hands.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Follow US</h3>
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Facebook
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              X
+            </a>
+          </div>
+
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Instagram
+            </a>
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">About</h3>
@@ -481,6 +626,15 @@ const Footer = () => {
               className="opacity-60 hover:opacity-100"
             >
               FAQ
+            </a>
+          </div>
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Announcements
             </a>
           </div>
         </div>
@@ -516,6 +670,18 @@ const Footer = () => {
             </a>
           </div>
         </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-bold text-lg">Our Address</h3>
+          <div>
+            <a
+              rel="noreferrer noopener"
+              href="#"
+              className="opacity-60 hover:opacity-100"
+            >
+              Kampala, Uganda
+            </a>
+          </div>
+        </div>
       </section>
       <section className="landing-container pb-14 text-center">
         <h3>
@@ -541,11 +707,12 @@ export default function LandingPage() {
       <Sponsors />
       <About />
       <HowItWorks />
-      <Features />
+      <BestProperties />
+      <FeaturedProperties />
       <Testimonals />
       <Pricing />
       <Newsletter />
-      <Footer/>
+      <Footer />
       <ScrollToTop />
     </>
   );

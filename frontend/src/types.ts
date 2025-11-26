@@ -44,7 +44,8 @@ export interface WorkListProps {
 }
 export interface FeatureProps {
   title: string;
-  description: string;
+  location: string;
+  price: string;
   image: string;
 }
 export interface TestimonialProps {
