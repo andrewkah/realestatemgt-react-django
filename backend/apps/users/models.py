@@ -1,3 +1,4 @@
+import uuid
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -52,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
+
     def tokens(self):
         refresh = RefreshToken.for_user(self)
         return {
@@ -60,26 +61,35 @@ class User(AbstractBaseUser, PermissionsMixin):
             'access': str(refresh.access_token),
         }
 
+
+def profile_image_upload_path(instance, filename):
+    ext = filename.split(".")[-1]
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    return f"apps/users/profiles/{instance.user.id}/{unique_name}"
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     bio = models.TextField(blank=True)
     location = models.CharField(max_length=100, blank=True)
-    image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    image = models.ImageField(
+        upload_to=profile_image_upload_path, null=True, blank=True
+    )
     birth_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s profile"
 
+
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-        
+
 def update_user_profile(sender, instance, created, **kwargs):
     if not created:
         instance.profile.save()
-        
+
 models.signals.post_save.connect(create_user_profile, sender=User)
 models.signals.post_save.connect(update_user_profile, sender=User)
 

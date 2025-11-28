@@ -1,3 +1,5 @@
+from datetime import date
+from django.forms import ValidationError
 from django.urls import reverse
 from apps.users.models import User, Profile
 from rest_framework import serializers
@@ -186,6 +188,36 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
         except Exception as e:
             return AuthenticationFailed(e, 401)
 
+class UpdateUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            "first_name",
+            "last_name",
+            "bio",
+            "location",
+            "image",
+            "birth_date",
+        )
+
+    def validate(self, attrs):
+        bio = attrs.get("bio")
+        image = attrs.get("image")
+        birth_date = attrs.get("birth_date")
+        if bio and len(bio) < 5:
+            raise ValidationError("Bio must be at least 5 characters long.")
+        if image and image.size > 5 * 1024 * 1024:
+            raise ValidationError("Image size should not exceed 5MB!")
+
+        if birth_date:
+            if birth_date > date.today():
+                raise ValidationError("Date of birth cannot be in the future.")
+            age = (date.today() - birth_date).days / 365.25
+            if age < 18:
+                raise ValidationError(
+                    "You must be at least 18 years old to use this service."
+                )
+        return attrs
 
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()

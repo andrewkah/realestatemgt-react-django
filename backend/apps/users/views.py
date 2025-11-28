@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import OneTimePassword, User, Profile
-from .serializers import LoginSerializer, LogoutSerializer, PasswordResetSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer
+from .serializers import LoginSerializer, LogoutSerializer, PasswordResetSerializer, ProfileSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer, UpdateUserProfileSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
@@ -14,7 +14,7 @@ from django.utils.encoding import force_str, DjangoUnicodeDecodeError
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-    
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = ([AllowAny])
@@ -54,7 +54,7 @@ class PasswordResetConfirm(generics.GenericAPIView):
             return Response({'success': True, 'message': 'Credentials are valid', 'uuid64': uuid64, 'token': token}, status=status.HTTP_200_OK)
         except DjangoUnicodeDecodeError:
             return Response({'message': 'The token is Invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
 class SetNewPassword(generics.GenericAPIView):
     permission_classes = ([AllowAny])
     serializer_class = SetNewPasswordSerializer
@@ -62,7 +62,7 @@ class SetNewPassword(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         return Response({'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
-    
+
 class VerifyUserEmail(generics.GenericAPIView):
     permission_classes = ([AllowAny])
     def post(self, request, *args, **kwargs):
@@ -99,6 +99,14 @@ class LogoutUserView(generics.GenericAPIView):
         serializer.save()
         return Response({'message': 'Successfully logged out'}, status=status.HTTP_204_NO_CONTENT)
 
+class UpdateUserProfile(generics.UpdateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Profile.objects.all()
+    serializer_class = UpdateUserProfileSerializer
+
+    def get_object(self):
+        return self.request.user.profile
+
 # Create your views here.
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -111,4 +119,3 @@ def dashboard(request):
         context = f"Hello {request.user.username}, You are seeing a POST request and text is {text}."
         return Response({"message": context}, status=status.HTTP_200_OK)
     return Response({}, status=status.HTTP_400_BAD_REQUEST)
-
