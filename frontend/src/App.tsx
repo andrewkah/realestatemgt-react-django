@@ -11,7 +11,7 @@ import { NotFound } from "./auth/NotFound";
 import { Dashboard } from "./pages/Dashboard";
 import VerfiyEmail from "./auth/VerfiyEmail";
 import { ResetPasswordForm } from "./auth/ResetPassword";
-import LandingPage from "./pages/LandingPage";
+import LandingPage from "./pages/landing/LandingPage";
 
 function App() {
   return (

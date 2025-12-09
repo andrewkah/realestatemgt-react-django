@@ -26,7 +26,7 @@ import {
 } from "@/components/Icons";
 // import { Badge } from "@/components/ui/badge";
 
-const Hero = () => {
+export const Hero = () => {
   return (
     <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
       {/* Background image placed in its own absolutely positioned layer so it stays under the navbar */}
