@@ -14,31 +14,32 @@ import {
 } from "./ui/sheet";
 import { Button, buttonVariants } from "./ui/button";
 import ThemeToggle from "./ThemeToggle";
+import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 
 interface RouteProps {
   href: string;
   label: string;
+  isComponent?: boolean;
 }
 const routeList: RouteProps[] = [
   {
-    href: "#home",
-    label: "Home",
+    href: "/#sponsors",
+    label: "Sponsors",
   },
   {
-    href: "#rent",
-    label: "Rent",
+    href: "/#about",
+    label: "About",
   },
   {
-    href: "#buy_sell",
-    label: "Buy/Sell",
+    href: "/#best-properties",
+    label: "Properties",
   },
+  { href: "/#testimonials", label: "Testimonials" },
   {
-    href: "#agent",
-    label: "Agent",
-  },
-  {
-    href: "#contact",
+    href: "/contact-us/#contactForm",
     label: "Contact Us",
+    isComponent: true,
   },
 ];
 const NavBar = () => {
@@ -62,7 +63,10 @@ const NavBar = () => {
             <ThemeToggle />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger className="px-2">
-                <Menu className="flex md:hidden h-5 x-5">
+                <Menu
+                  className="flex md:hidden h-5 w-5"
+                  onClick={() => setIsOpen(true)}
+                >
                   <span className="sr-only">Menu Icon</span>
                 </Menu>
               </SheetTrigger>
@@ -71,19 +75,36 @@ const NavBar = () => {
                   <SheetTitle className="font-bold text-xl">IEstate</SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col justify-center items-center gap-2 mt-4">
-                  {routeList.map(({ href, label }: RouteProps) => (
-                    <a
-                      rel="noreferrer noopener"
-                      key={label}
-                      href={href}
-                      onClick={() => setIsOpen(false)}
-                      className={buttonVariants({ variant: "ghost" })}
-                    >
-                      {label}
-                    </a>
-                  ))}
+                  {routeList.map((route: RouteProps, i) =>
+                    route.isComponent ? (
+                      <Link
+                        to={route.href}
+                        key={i}
+                        rel="noreferrer noopener"
+                        onClick={() => setIsOpen(false)}
+                        className={`text-[17px] ${buttonVariants({
+                          variant: "ghost",
+                        })}`}
+                      >
+                        {route.label}
+                      </Link>
+                    ) : (
+                      <HashLink
+                        smooth
+                        to={route.href}
+                        key={i}
+                        rel="noreferrer noopener"
+                        onClick={() => setIsOpen(false)}
+                        className={`text-[17px] ${buttonVariants({
+                          variant: "ghost",
+                        })}`}
+                      >
+                        {route.label}
+                      </HashLink>
+                    )
+                  )}
                   <Button
-                    className="w-2.5 h-11"
+                    className="w-[110px] h-11"
                     variant={"default"}
                     onClick={() => {}}
                   >
@@ -95,18 +116,33 @@ const NavBar = () => {
           </span>
           {/* desktop */}
           <nav className="hidden md:flex gap-2">
-            {routeList.map((route: RouteProps, i) => (
-              <a
-                href={route.href}
-                key={i}
-                rel="noreferrer noopener"
-                className={`text-[17px] ${buttonVariants({
-                  variant: "ghost",
-                })}`}
-              >
-                {route.label}
-              </a>
-            ))}
+            {routeList.map((route: RouteProps, i) =>
+              route.isComponent ? (
+                <Link
+                  to={route.href}
+                  key={i}
+                  rel="noreferrer noopener"
+                  className={`text-[17px] ${buttonVariants({
+                    variant: "ghost",
+                  })}`}
+                >
+                  {route.label}
+                </Link>
+              ) : (
+                <HashLink
+                  smooth
+                  to={route.href}
+                  key={i}
+                  rel="noreferrer noopener"
+                  onClick={() => setIsOpen(false)}
+                  className={`text-[17px] ${buttonVariants({
+                    variant: "ghost",
+                  })}`}
+                >
+                  {route.label}
+                </HashLink>
+              )
+            )}
           </nav>
           <div className="hidden md:flex gap-2">
             <Button className="w-20 h-10" variant="default" onClick={() => {}}>

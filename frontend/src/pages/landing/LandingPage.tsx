@@ -369,7 +369,7 @@ const featuredProperties: FeatureProps[] = [
 const FeaturedProperties = () => {
   return (
     <section
-      id="best-properties"
+      id="featured-properties"
       className="landing-container container py-24 sm:py-32 space-y-8"
     >
       <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
@@ -545,7 +545,7 @@ const Newsletter = () => {
   );
 };
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer id="footer">
       <section className="landing-container py-24 sm:py-32 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-12 gap-y-8">

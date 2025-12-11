@@ -12,6 +12,7 @@ import { Dashboard } from "./pages/Dashboard";
 import VerfiyEmail from "./auth/VerfiyEmail";
 import { ResetPasswordForm } from "./auth/ResetPassword";
 import LandingPage from "./pages/landing/LandingPage";
+import ContactUs from "./pages/landing/Contact-Us";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           {/* Routes with layout */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/contact-us" element={<ContactUs/>} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
