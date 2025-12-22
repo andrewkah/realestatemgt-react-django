@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import OneTimePassword, User, Profile
-from .serializers import LoginSerializer, LogoutSerializer, PasswordResetSerializer, ProfileSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer, UpdateUserProfileSerializer
+from .serializers import LeadCaptureSerializer, LoginSerializer, LogoutSerializer, PasswordResetSerializer, ProfileSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer, UpdateUserProfileSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
@@ -106,6 +106,20 @@ class UpdateUserProfile(generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+class LeadCaptureView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = LeadCaptureSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(
+                {"message": "Lead captured successfully!", "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Create your views here.
 @api_view(['GET', 'POST'])

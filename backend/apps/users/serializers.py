@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -188,6 +189,7 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
         except Exception as e:
             return AuthenticationFailed(e, 401)
 
+
 class UpdateUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
@@ -219,6 +221,7 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
                 )
         return attrs
 
+
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
     default_error_message = {"bad_token": {"Token is invalid or expired!"}}
@@ -233,3 +236,28 @@ class LogoutSerializer(serializers.Serializer):
             token.blacklist()
         except TokenError:
             return self.fail("bad_token")
+
+class LeadCaptureSerializer(serializers.Serializer):
+    full_name = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField()
+    message = serializers.CharField(required=False, allow_blank=True)
+
+    def create(self, validated_data):
+        full_name = validated_data["name"]
+        email = validated_data["email"]
+        # Create an inactive user for the lead; use email as username to avoid missing field
+        user = User.objects.create_user(
+            email=email,
+            username=full_name,
+            password=User.objects.make_random_password(),
+            is_active=False,
+        )
+        # Add to LeadCapture group if it exists
+        try:
+            group = Group.objects.get(name="Prospect")
+            user.groups.add(group)
+        except Group.DoesNotExist:
+            pass
+
+        # Return created user (or change to return validated_data depending on view expectations)
+        return user
