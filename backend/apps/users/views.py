@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+from apps.users.permissions import IsPropertyClient
 from .models import OneTimePassword, User, Profile
 from .serializers import LeadCaptureSerializer, LoginSerializer, LogoutSerializer, PasswordResetSerializer, ProfileSerializer, RegisterSerializer, MyTokenObtainPairSerializer, SetNewPasswordSerializer, UpdateUserProfileSerializer
 
@@ -112,14 +114,14 @@ class LeadCaptureView(generics.CreateAPIView):
     serializer_class = LeadCaptureSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(
-                {"message": "Lead captured successfully!", "data": serializer.data},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # Create your views here.
 @api_view(['GET', 'POST'])

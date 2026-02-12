@@ -1,6 +1,7 @@
 from datetime import date
 from django.forms import ValidationError
 from django.urls import reverse
+from django.db import transaction
 from apps.users.models import User, Profile
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -41,25 +42,22 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("first_name", "last_name", "bio", "location", "image", "birth_date")
+        fields = ("first_name", "last_name", "bio", "location", "image", "role")
 
 
-class UserWithProfileSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    email = serializers.EmailField()
-    username = serializers.CharField()
-    is_active = serializers.BooleanField()
-    is_staff = serializers.BooleanField()
-    first_name = serializers.SerializerMethodField()
-    last_name = serializers.SerializerMethodField()
+class UserWithProfileSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(read_only=True)
 
-    def get_first_name(self, obj):
-        profile = getattr(obj, "profile", None)
-        return getattr(profile, "first_name", None) if profile else None
-
-    def get_last_name(self, obj):
-        profile = getattr(obj, "profile", None)
-        return getattr(profile, "last_name", None) if profile else None
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "username",
+            "is_active",
+            "is_staff",
+            "profile"
+        )
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -81,14 +79,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data["email"], username=validated_data["username"]
-        )
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    email=validated_data["email"], username=validated_data["username"]
+                )
 
-        user.set_password(validated_data["password"])
-        user.save()
+                user.set_password(validated_data["password"])
+                user.save()
 
-        return user
+                return user
+        except Exception as e:
+            raise serializers.ValidationError(f"User creation failed: {str(e)}")
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -200,16 +202,20 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
             "location",
             "image",
             "birth_date",
+            "role",
         )
 
     def validate(self, attrs):
         bio = attrs.get("bio")
         image = attrs.get("image")
         birth_date = attrs.get("birth_date")
+        role = attrs.get("role")
         if bio and len(bio) < 5:
             raise ValidationError("Bio must be at least 5 characters long.")
         if image and image.size > 5 * 1024 * 1024:
             raise ValidationError("Image size should not exceed 5MB!")
+        if role and role not in Profile.ROLE_VALUES:
+            raise ValidationError("Role must be one of: buyer, tenant, agent.")
 
         if birth_date:
             if birth_date > date.today():
@@ -237,27 +243,73 @@ class LogoutSerializer(serializers.Serializer):
         except TokenError:
             return self.fail("bad_token")
 
+
 class LeadCaptureSerializer(serializers.Serializer):
-    full_name = serializers.CharField(required=False, allow_blank=True)
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
     email = serializers.EmailField()
-    message = serializers.CharField(required=False, allow_blank=True)
+    phone = serializers.CharField(required=False, allow_blank=True)
+    lead_type = serializers.ChoiceField(choices=Profile.ROLE_CHOICES, required=False)
+
+    class Meta:
+        model = Profile
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "lead_type",
+        )
+
+    def validate(self, attrs):
+        email = attrs.get("email", "")
+        phone = attrs.get("phone", "")
+        lead_type = attrs.get("lead_type", "")
+        if not email or not phone:
+            raise ValidationError("Email and phone are required.")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("A user with this email already exists.")
+        if Profile.objects.filter(phone=phone).exists():
+            raise ValidationError("A user with this phone number already exists.")
+        if lead_type:
+            if lead_type not in Profile.ROLE_VALUES:
+                raise ValidationError("Role must be one of: buyer, tenant, agent.")
+        else:raise ValidationError("Lead type is required.")
+        return attrs
 
     def create(self, validated_data):
-        full_name = validated_data["name"]
-        email = validated_data["email"]
-        # Create an inactive user for the lead; use email as username to avoid missing field
-        user = User.objects.create_user(
-            email=email,
-            username=full_name,
-            password=User.objects.make_random_password(),
-            is_active=False,
-        )
-        # Add to LeadCapture group if it exists
         try:
-            group = Group.objects.get(name="Prospect")
-            user.groups.add(group)
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    email=validated_data["email"],
+                    username=validated_data["email"].split("@")[0],
+                    password=User.objects.make_random_password(),
+                    is_active=False,
+                )
+                Profile.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        "first_name": validated_data.get("first_name", ""),
+                        "last_name": validated_data.get("last_name", ""),
+                        "phone": validated_data.get("phone", ""),
+                        "role": validated_data.get(
+                            "lead_type", "buyer"
+                        ),  # Map lead_type to role
+                    },
+                )
+                group = Group.objects.get(name="Buyer")
+                user.groups.add(group)
+                user.refresh_from_db() 
+                return user
         except Group.DoesNotExist:
-            pass
-
-        # Return created user (or change to return validated_data depending on view expectations)
-        return user
+            raise ValueError(
+                "The 'Buyer' group does not exist. Please create it before adding leads."
+            )
+        except User.DoesNotExist:
+            raise ValueError("User creation failed. Please check the provided data.")
+        except Exception as e:
+            raise ValueError(
+                f"An error occurred while creating the lead profile: {str(e)}"
+            )
+    def to_representation(self, instance):
+        return UserWithProfileSerializer(instance).data

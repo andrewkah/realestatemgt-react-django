@@ -39,7 +39,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
         return self._create_user(email, password, **extra_fields)
-
+    @staticmethod
     def make_random_password():
         return "".join(
             secrets.choice(string.ascii_letters + string.digits) for _ in range(6)
@@ -86,18 +86,27 @@ def profile_image_upload_path(instance, filename):
 
 
 class Profile(models.Model):
+    ROLE_CHOICES = [
+        ("buyer", "Buyer"),
+        ("tenant", "Tenant"),
+        ("agent", "Agent"),
+    ]
+    ROLE_VALUES = [choice[0] for choice in ROLE_CHOICES]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
     bio = models.TextField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
     location = models.CharField(max_length=100, blank=True)
     image = models.ImageField(
         upload_to=profile_image_upload_path, null=True, blank=True
     )
-    birth_date = models.DateField(null=True, blank=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.username}'s profile"
+        return f"{self.user.username} - {self.role}"
 
 
 def create_user_profile(sender, instance, created, **kwargs):
@@ -121,3 +130,63 @@ class OneTimePassword(models.Model):
 
     def __str__(self):
         return f"{self.user.username}-passcode"
+
+
+class LeadStatus(models.Model):
+    name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class Agent(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="agent")    
+    is_active = models.BooleanField(default=True)
+    last_assigned_at = models.DateTimeField(null=True, blank=True)
+    total_leads = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.profile.first_name} {self.profile.last_name} (Agent)"
+
+class Buyer(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
+    lead_type = models.OneToOneField(LeadStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
+    preferred_property_types = models.CharField(max_length=100)
+    min_bedrooms = models.IntegerField(null=True, blank=True)
+    max_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    preferred_regions = models.JSONField(default=list, blank=True)
+    assigned_agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.profile.first_name} {self.profile.last_name} - {self.lead_type} (Buyer)"
+
+    def has_user_account(self):
+        return self.profile is not None
+
+    def has_assigned_agent(self):
+        return self.assigned_agent is not None
+
+class Tenant(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='tenant')
+    lead_type = models.OneToOneField(LeadStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='tenant')
+    # leases = models.ManyToManyField('Lease', blank=True, related_name='tenant')
+    date_of_birth = models.DateField(null=True, blank=True)
+    occupation = models.CharField(max_length=100, blank=True)
+    emergency_contact_name = models.CharField(max_length=100, blank=True)
+    emergency_contact_phone = models.CharField(max_length=20, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.profile.first_name} {self.profile.last_name} - {self.lead_type} (Tenant)"
+    
+    def has_user_account(self):
+        return self.user is not None
