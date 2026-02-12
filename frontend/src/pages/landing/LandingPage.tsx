@@ -248,6 +248,8 @@ import { ScrollToTop } from "@/components/ScrollTotop";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Pricing } from "@/components/Pricing";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 const bestProperties = [
   {
     title: "residential",
@@ -334,39 +336,46 @@ const featuredProperties: FeatureProps[] = [
     location: "Kampala",
     price: "$880000",
     image: image4,
+    propertyType: "buy",
   },
   {
     title: "max-residential",
     location: "Kampala",
     price: "$780000",
     image: image3,
+    propertyType: "buy",
   },
   {
     title: "luxury",
     location: "Kampala",
     price: "$680000",
     image: image,
+    propertyType: "rent",
   },
   {
-    title: "luxury",
+    title: "luxury0",
     location: "Kampala",
     price: "$680000",
     image: image,
+    propertyType: "rent",
   },
   {
-    title: "luxury",
+    title: "luxury1",
     location: "Kampala",
     price: "$580000",
     image: image3,
+    propertyType: "buy",
   },
   {
-    title: "luxury",
+    title: "luxury2",
     location: "Kampala",
     price: "$680000",
     image: image4,
+    propertyType: "rent",
   },
 ];
 const FeaturedProperties = () => {
+
   return (
     <section
       id="featured-properties"
@@ -386,37 +395,48 @@ const FeaturedProperties = () => {
         smart investment opportunity, we've got you covered!
       </p>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {featuredProperties.map(({ title, location, price, image }) => (
-          <Card key={title} className="pt-0">
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover rounded-t-xl"
-            />
+        {featuredProperties.map(
+          ({ title, location, price, image, propertyType }) => (
+            <Card key={title} className="pt-0 gap-3">
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-full object-cover rounded-t-xl"
+              />
 
-            <CardDescription>
-              <div className="flex flex-col">
-                <h3 className="text-2xl font-medium">{title}</h3>
-                <div className="flex justify-between px-3">
-                  <span className="flex items-center gap-2">
-                    <MapPin className="text-primary" />
-                    <h4 className="text-md font-bold">{location}</h4>
-                  </span>
-                  <span>{price}</span>
+              <CardDescription>
+                <div className="flex flex-col">
+                  <Badge
+                    variant={propertyType === "rent" ? "secondary" : "default"}
+                    className={`flex ms-3 text-sm ${propertyType === "rent" ? "bg-green-300 " : "bg-emerald-700"}`}
+                  >
+                    {propertyType === "rent" ? "Rent" : "Buy"}
+                  </Badge>
+
+                  <div className="flex justify-center my-3">
+                    <h3 className="text-2xl font-medium">{title}</h3>
+                  </div>
+                  <div className="flex justify-between px-3">
+                    <span className="flex items-center gap-2">
+                      <MapPin className="text-primary" />
+                      <h4 className="text-md font-bold">{location}</h4>
+                    </span>
+                    <span>{price}</span>
+                  </div>
                 </div>
-              </div>
-            </CardDescription>
+              </CardDescription>
 
-            <CardFooter className="flex justify-center align-center">
-              <Button
-                variant={"outline"}
-                className="border border-primary rounded-md bg-white"
-              >
-                View Property
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+              <CardFooter className="flex justify-center align-center">
+                <Link
+                  to={`/property-entry/${propertyType}`}
+                  className="border border-primary rounded-md gap-2 py-2 px-4 bg-white hover:bg-primary shadow-xs hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+                >
+                  View Property
+                </Link>
+              </CardFooter>
+            </Card>
+          ),
+        )}
       </div>
     </section>
   );
@@ -503,7 +523,7 @@ const Testimonals = () => {
               </CardHeader>
               <CardContent className="text-sm">{comment}</CardContent>
             </Card>
-          )
+          ),
         )}
       </div>
     </section>

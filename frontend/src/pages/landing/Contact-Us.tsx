@@ -1,56 +1,51 @@
 import NavBar from "@/components/NavBar";
 import { Footer, Hero } from "./LandingPage";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm, type SubmitHandler } from "react-hook-form";
 import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import StaticMap from "@/components/Map";
+import DynamicForm, { type FieldConfig } from "@/components/DynamicForm";
+
 const phoneRegex = /^\+?[\d\s-]+(?:[\d-]+\d+)?$/;
-const formSchema = z.object({
-  fullname: z.string({ error: "Please enter valid text" }).min(3, "Too short"),
-  email: z.email({ error: "Please enter a valid email address" }),
-  phone: z
-    .string()
-    .regex(phoneRegex, "Please enter a valid phone number")
-    .min(10, "Too short"),
-  message: z.string({ error: "Please enter valid text" }),
-});
-type FormFields = z.infer<typeof formSchema>;
+const contactUsFields: FieldConfig[] = [
+  {
+    name: "fullname",
+    label: "Full Name",
+    type: "text",
+    placeholder: "John Doe",
+    validation: z.string().min(3, "Too short"),
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "Mk2mD@example.com",
+    validation: z.email({ error: "Please enter a valid email address" }),
+  },
+  {
+    name: 'phone',
+    label: "Phone",
+    type: "tel",
+    placeholder: "+1 (123) 456-7890",
+    validation: z.string().regex(phoneRegex, "Please enter a valid phone number"),
+  },
+  {
+    name: "message",
+    label: "Message",
+    type: "textarea",
+    placeholder: "Enter your message",
+    validation: z.string({ error: "Please enter valid text" }),
+  },
+]
 const ContactBody = () => {
-  const form = useForm<FormFields>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullname: "",
-      email: "",
-      phone: "",
-      message: "",
-    },
-  });
-  const onSubmit: SubmitHandler<FormFields> = async (data: FormFields) => {
-    console.log(data);
-    try {
-      await axios.post("/api/contact", data);
-    } catch (error) {
-      console.log(error);
-      form.setError("root", {
-        message: `An error ocurred:${error}`,
-      });
-    }
-  };
+    const handleSubmit = async (data: any) => {
+      console.log(data);
+      try {
+        await axios.post("/api/contact", data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
   return (
     <section className="landing-container py-24 sm:py-32" id="contactForm">
       <div className="grid lg:grid-cols-2 gap-8 place-items-center">
@@ -72,108 +67,8 @@ const ContactBody = () => {
         </div>
         <Card className="px-4 shadow-sm">
           <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4 w-90"
-              >
-                {form.formState.errors.root && (
-                  <Alert
-                    variant="destructive"
-                    className="rounded-none border-b-0 border-l-4 border-r-0 border-t-0 border-red-500 bg-red-500/10 font-medium text-red-500"
-                  >
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {form.formState.errors.root?.message}
-                    </AlertDescription>
-                  </Alert>
-                )}
-                <FormField
-                  control={form.control}
-                  name="fullname"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id="fullname"
-                          type="text"
-                          placeholder="E.g John Doe"
-                          className="h-11"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id="email"
-                          type="email"
-                          placeholder="someone@example.com"
-                          className="h-11"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id="phone"
-                          type="text"
-                          placeholder="Enter your phone number"
-                          className="h-11"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          id="message"
-                          placeholder="Enter your message here"
-                          className="h-28"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  variant="default"
-                  color="primary"
-                  type="submit"
-                  className="w-full h-11"
-                  disabled={form.formState.isSubmitting}
-                >
-                  {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-                </Button>
-              </form>
-            </Form>
+            <DynamicForm
+              fields={contactUsFields} onSubmit={handleSubmit} submitButtonText="Submit"/>
           </CardContent>
         </Card>
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 // import {
@@ -34,8 +35,8 @@ export type FieldConfig = {
 
 // Component props type
 type DynamicFormProps = {
-//   title: string;
-//   description: string;
+  //   title: string;
+  //   description: string;
   fields: FieldConfig[];
   onSubmit: (data: any) => Promise<void> | void;
   submitButtonText?: string;
@@ -43,12 +44,12 @@ type DynamicFormProps = {
 };
 
 const DynamicForm = ({
-//   title,
-//   description,
+  //   title,
+  //   description,
   fields,
   onSubmit,
   submitButtonText = "Submit",
-//   className = "",
+  //   className = "",
 }: DynamicFormProps) => {
   // Build schema dynamically from field configs
   const schemaShape = fields.reduce(
@@ -62,13 +63,14 @@ const DynamicForm = ({
   const formSchema = z.object(schemaShape);
   type FormFields = z.infer<typeof formSchema>;
 
-  // Build default values
+  // Build default values (use attribute value when provided)
   const defaultValues = fields.reduce(
     (acc, field) => {
-      acc[field.name] = "";
+      const attrValue = field.attributes?.value;
+      acc[field.name] = attrValue !== undefined ? (attrValue as any) : "";
       return acc;
     },
-    {} as Record<string, string>,
+    {} as Record<string, any>,
   );
 
   const form = useForm<FormFields>({
@@ -123,31 +125,40 @@ const DynamicForm = ({
               <FormItem>
                 <FormLabel>{field.label}</FormLabel>
                 <FormControl>
-                  {field.type === "textarea" ? (
-                    <Textarea
-                      {...formField}
-                      {...field.attributes}
-                      value={(formField.value as string) || ""}
-                      id={field.name}
-                      placeholder={field.placeholder}
-                      className="min-h-[100px]"
-                    />
-                  ) : (
-                    <Input
-                      {...formField}
-                      {...field.attributes}
-                      
-                      value={
-                        field.type === "number"
-                          ? (formField.value as number) || ""
-                          : (formField.value as string) || ""
-                      }
-                      id={field.name}
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      className="h-11"
-                    />
-                  )}
+                  {(() => {
+                    const { value: _attrValue, ...otherAttributes } =
+                      (field.attributes ?? {}) as Record<string, any>;
+
+                    if (field.type === "textarea") {
+                      return (
+                        <Textarea
+                          id={field.name}
+                          placeholder={field.placeholder}
+                          className="min-h-[100px]"
+                          {...otherAttributes}
+                          value={String(formField.value ?? "")}
+                          onChange={formField.onChange}
+                          onBlur={formField.onBlur}
+                          name={formField.name}
+                          ref={formField.ref as any}
+                        />
+                      );
+                    }
+
+                    return (
+                      <Input
+                        id={field.name}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        className="h-11"
+                        {...otherAttributes}
+                        value={(formField.value as any) ?? ""}
+                        onChange={formField.onChange}
+                        onBlur={formField.onBlur}
+                        name={formField.name}
+                      />
+                    );
+                  })()}
                 </FormControl>
                 <FormMessage />
               </FormItem>
