@@ -9,8 +9,12 @@ export interface User {
   id: number;
   email: string;
   username: string;
-  first_name: string;
-  last_name: string;
+  profile?: {
+    first_name: string;
+    last_name: string;
+    role?: string;
+    image?: string;
+  };
   is_active: number;
 }
 
@@ -47,6 +51,7 @@ export interface FeatureProps {
   location: string;
   price: string;
   image: string;
+  propertyType: 'buy' | 'rent';
 }
 export interface TestimonialProps {
   image: string;
