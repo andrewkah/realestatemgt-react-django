@@ -7,12 +7,15 @@ import { LoginForm } from "./auth/Login";
 import { RegisterForm } from "./auth/Register";
 import Layout from "./components/Layout";
 import { ForgotPasswordForm } from "./auth/ForgotPassword";
-import { NotFound } from "./auth/NotFound";
+import { NotFound } from "./components/NotFound";
 import { Dashboard } from "./pages/Dashboard";
 import VerfiyEmail from "./auth/VerfiyEmail";
 import { ResetPasswordForm } from "./auth/ResetPassword";
 import LandingPage from "./pages/landing/LandingPage";
 import ContactUs from "./pages/landing/Contact-Us";
+import LeadCaptureForm from "./pages/landing/LeadCaptureForm";
+import PropertyEntryGate from "./components/PropertyEntryGate";
+import Unauthorised from "./components/Unauthorised";
 
 function App() {
   return (
@@ -21,13 +24,19 @@ function App() {
         <Routes>
           {/* Routes with layout */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/contact-us" element={<ContactUs/>} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route
+            path="/capture-lead/:propertyType"
+            element={<LeadCaptureForm />}
+          />
+          <Route path="/property-entry/:propertyType" element={ <PropertyEntryGate/>} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/verify-email" element={<VerfiyEmail />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<Unauthorised />} />
 
           {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
