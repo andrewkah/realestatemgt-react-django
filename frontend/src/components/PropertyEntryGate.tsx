@@ -1,5 +1,5 @@
 import { AuthContext } from '@/context/AuthContext';
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 
 const PropertyEntryGate = () => {
