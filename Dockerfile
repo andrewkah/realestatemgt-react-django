@@ -1,4 +1,7 @@
 FROM python:3.12-slim AS backend
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y \ 
@@ -9,6 +12,10 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     build-essential \ 
     && rm -rf /var/lib/apt/lists/*
+
+# Create the virtual env
+RUN python -m venv /opt/venv
+
 COPY backend/requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
@@ -26,8 +33,7 @@ RUN npm run build
 FROM python:3.12-slim
 
 WORKDIR /app
-COPY --from=backend /install /usr/local
-COPY backend/ ./backend/
+COPY --from=backend backend/ ./backend/
 
 COPY --from=frontend /app/dist ./frontend/dist
 
