@@ -33,10 +33,18 @@ RUN npm run build
 FROM python:3.12-slim
 
 WORKDIR /app
-COPY --from=backend backend/ ./backend/
+COPY --from=backend /opt/venv /opt/venv 
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY backend/ ./backend/
 
 COPY --from=frontend /app/dist ./frontend/dist
 
+RUN apt-get update && apt-get install -y \
+    libmariadb3 \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+    
 EXPOSE 8085
 
 CMD [ "python", "backend/manage.py", "runserver", "0.0.0.0:8085" ]
