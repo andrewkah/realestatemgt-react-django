@@ -145,8 +145,6 @@ deploy-prod-job:
   environment:
     name: production
     url: http://$PROD_HOST
-  only:
-    - dev_andrew
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
       when: manual # requires human to click play
