@@ -1,3 +1,42 @@
 from django.test import TestCase
+from rest_framework.test import APIClient
+from django.urls import reverse
 
-# Create your tests here.
+from apps.users.models import User
+
+
+class LoginTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.login_url = reverse("login")
+
+    def test_invalid_login_returns_401(self):
+        """Posting with a non-existent email should return 401 and an error message."""
+        resp = self.client.post(
+            self.login_url,
+            {"email": "noone@example.com", "password": "wrongpassword"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 401)
+        # DRF returns the message under 'detail' for AuthenticationFailed
+        detail = resp.data.get("detail", "")
+        self.assertIn("Invalid credentials", str(detail))
+
+    def test_valid_login_returns_tokens(self):
+        """A verified user can log in and receives tokens and user data."""
+        user = User.objects.create_user(
+            email="test@example.com", username="testuser", password="strongpass"
+        )
+        user.is_verified = True
+        user.save()
+
+        resp = self.client.post(
+            self.login_url,
+            {"email": "test@example.com", "password": "strongpass"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("tokens", resp.data)
+        self.assertIn("user", resp.data)
+        self.assertIn("access", resp.data["tokens"])
+        self.assertIn("refresh", resp.data["tokens"])

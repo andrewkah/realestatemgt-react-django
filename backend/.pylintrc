@@ -1,0 +1,18 @@
+[MASTER]
+# Load the pylint-django plugin
+load-plugins=pylint_django
+# Set the path to your Django project's settings module
+django-settings-module=realestatemgt.settings
+
+[MESSAGES CONTROL]
+# Disable some common warnings that might be overly strict for Django projects
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    no-member,
+    too-few-public-methods,
+    R0903
+
+[FORMAT]
+max-line-length=120

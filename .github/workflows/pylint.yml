@@ -1,0 +1,40 @@
+name: Pylint
+
+on:
+  push:
+    branches:
+      - dev_andrew
+    paths:
+      - ".github/workflows/pylint.yml"
+      - "backend/*.py"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Analysing the code with pylint
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ENVIRONMENT: pipeline
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+        run: |
+          cd backend
+          source .venv/bin/activate
+          export DJANGO_SETTINGS_MODULE=realestatemgt.settings
+          pylint $(git ls-files '*.py')

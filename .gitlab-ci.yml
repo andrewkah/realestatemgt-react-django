@@ -1,0 +1,207 @@
+stages:
+  - lint
+  - test
+  - security
+  - build
+  - deploy_staging
+  - deploy_prod
+  # - backend
+  # - frontend-build
+
+variables:
+  CI_COMMIT_REF_SLUG: master
+  ENVIRONMENT: pipeline
+  PYTHONUNBUFFERED: 1
+
+default:
+  interruptible: false
+  cache:
+    key:
+      files:
+        - backend/requirements.txt
+        - frontend/package-lock.json
+    paths:
+      - backend/.cache/pip
+      - backend/.venv/
+      - frontend/node_modules
+    policy: pull-push
+
+backend-lint-job:
+  stage: lint
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - echo "Running isort check..."
+    - isort --check-only .
+    - echo "Running black check..."
+    - black --check .
+    - echo "Running flake8 linting..."
+    - flake8 .
+
+frontend-lint-job:
+  stage: lint
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - echo "Running prettier check..."
+    - npx prettier --check .
+    - echo "Running eslint linting..."
+    - npx eslint .
+
+backend-test-job:
+  stage: test
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - python manage.py test
+
+frontend-test-job:
+  stage: test
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run test
+
+Build-job:
+  stage: build
+  image: andrewkah/realestate-django-react:latest
+  script:
+    - docker build -t 
+  
+backend-security-job:
+  stage: security
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - bandit -r .
+
+frontend-security-job:
+  stage: security
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm audit --audit-level=medium
+
+backend-deploy-job:
+  stage: deploy_staging
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+  script:
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      "
+  environment:
+    name: staging
+    url: http://$STAGING_HOST
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
+      when: manual # requires human to click play
+
+deploy-prod-job:
+  stage: deploy_prod
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_USER@$PROD_HOST "
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      "
+  environment:
+    name: production
+    url: http://$PROD_HOST
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
+      when: manual # requires human to click play
+
+
+frontend-deploy-job:
+  stage: deploy_staging
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+
+backend-deploy-prod-job:
+  stage: deploy_prod
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - python manage.py migrate
+    - python manage.py collectstatic --noinput
+
+frontend-deploy-prod-job:
+  stage: deploy_prod
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+
+# backend:
+#   stage: backend
+#   image: python:3.12
+#   before_script:
+#     - cd backend
+#     - python -m venv .venv
+#     - source .venv/bin/activate
+#     - python -m pip install --upgrade pip
+#     - pip install -r requirements.txt
+#   script:
+#     - python manage.py makemigrations --check --dry-run
+#     - python manage.py migrate
+#     - python manage.py collectstatic --noinput
+#     - python manage.py test
+
+# frontend-build:
+#   stage: frontend-build
+#   image: node:20
+#   before_script:
+#     - cd frontend
+#     - npm ci
+#   script:
+#     - npm run build
+
