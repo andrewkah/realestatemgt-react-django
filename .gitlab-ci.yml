@@ -16,9 +16,10 @@ variables:
 default:
   interruptible: false
   cache:
-    files:
-      - backend/requirements.txt
-      - frontend/package-lock.json
+    keys:
+      files:
+        - backend/requirements.txt
+        - frontend/package-lock.json
     paths:
       - backend/.cache/pip
       - backend/.venv/
