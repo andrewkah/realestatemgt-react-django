@@ -24,6 +24,7 @@ jobs:
     - name: Analysing the code with pylint
       env: 
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        ENVIRONMENT: pipeline
       run: |
         cd backend
         source .venv/bin/activate
