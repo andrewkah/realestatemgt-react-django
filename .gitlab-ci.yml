@@ -1,11 +1,103 @@
 stages:
+  - lint
+  - test
+  - security
+  - build
+  - deploy_staging
+  - deploy_prod
   - backend
   - frontend-build
 
 variables:
+  CI_COMMIT_REF_SLUG: master
   ENVIRONMENT: pipeline
   PYTHONUNBUFFERED: 1
 
+default:
+  interruptible: false
+  cache:
+    files:
+      - backend/requirements.txt
+      - frontend/package-lock.json
+    paths:
+      - backend/.cache/pip
+      - backend/.venv/
+      - frontend/node_modules
+    policy: pull-push
+
+backend-lint-job:
+  stage: lint
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - echo "Running isort check..."
+    - isort --check-only .
+    - echo "Running black check..."
+    - black --check .
+    - echo "Running flake8 linting..."
+    - flake8 .
+
+frontend-lint-job:
+  stage: lint
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - echo "Running prettier check..."
+    - npx prettier --check .
+    - echo "Running eslint linting..."
+    - npx eslint .
+
+backend-test-job:
+  stage: test
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - python manage.py test
+
+frontend-test-job:
+  stage: test
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run test
+
+Build-job:
+  stage: build
+  image: yourname/realestate-django-react-ci
+  script:
+    - docker build -t 
+  
+backend-security-job:
+  stage: security
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - bandit -r .
+
+frontend-security-job:
+  stage: security
+  image: node:20
+  before_script:
+    - cd frontend
 backend:
   stage: backend
   image: python:3.12
