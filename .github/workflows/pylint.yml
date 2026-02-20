@@ -15,8 +15,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
-      env: 
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
         cd backend
         python -m venv .venv
@@ -24,6 +22,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Analysing the code with pylint
+      env: 
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
         cd backend
         source .venv/bin/activate
