@@ -25,6 +25,8 @@ jobs:
       env: 
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         ENVIRONMENT: pipeline
+        EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+        EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
       run: |
         cd backend
         source .venv/bin/activate

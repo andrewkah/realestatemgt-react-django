@@ -24,7 +24,7 @@ COPY backend/ ./backend/
 
 COPY --from=frontend /app/dist ./frontend/dist
 
-EXPOSE 8085
+EXPOSE 8083
 
-CMD [ "python", "backend/manage.py", "runserver", "0.0.0.0:8085" ]
+CMD [ "python", "backend/manage.py", "runserver", "0.0.0.0:8083" ]
 
