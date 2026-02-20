@@ -16,7 +16,7 @@ variables:
 default:
   interruptible: false
   cache:
-    keys:
+    key:
       files:
         - backend/requirements.txt
         - frontend/package-lock.json
