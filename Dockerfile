@@ -1,4 +1,4 @@
-FROM python:3.12-slim as backend
+FROM python:3.12-slim AS backend
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y \ 
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-FROM node:alpine3.23 as frontend
+FROM node:alpine3.23 AS frontend
 
 WORKDIR /app
 
