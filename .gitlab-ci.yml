@@ -5,8 +5,8 @@ stages:
   - build
   - deploy_staging
   - deploy_prod
-  - backend
-  - frontend-build
+  # - backend
+  # - frontend-build
 
 variables:
   CI_COMMIT_REF_SLUG: master
@@ -77,7 +77,7 @@ frontend-test-job:
 
 Build-job:
   stage: build
-  image: yourname/realestate-django-react-ci
+  image: andrewkah/realestate-django-react:latest
   script:
     - docker build -t 
   
@@ -98,8 +98,70 @@ frontend-security-job:
   image: node:20
   before_script:
     - cd frontend
-backend:
-  stage: backend
+    - npm ci
+  script:
+    - npm audit --audit-level=medium
+
+backend-deploy-job:
+  stage: deploy_staging
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+  script:
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      "
+  environment:
+    name: staging
+    url: http://$STAGING_HOST
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
+      when: manual # requires human to click play
+
+deploy-prod-job:
+  stage: deploy_prod
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_USER@$PROD_HOST "
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      "
+  environment:
+    name: production
+    url: http://$PROD_HOST
+  only:
+    - dev_andrew
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
+      when: manual # requires human to click play
+
+
+frontend-deploy-job:
+  stage: deploy_staging
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+
+backend-deploy-prod-job:
+  stage: deploy_prod
   image: python:3.12
   before_script:
     - cd backend
@@ -108,17 +170,39 @@ backend:
     - python -m pip install --upgrade pip
     - pip install -r requirements.txt
   script:
-    - python manage.py makemigrations --check --dry-run
     - python manage.py migrate
     - python manage.py collectstatic --noinput
-    - python manage.py test
 
-frontend-build:
-  stage: frontend-build
+frontend-deploy-prod-job:
+  stage: deploy_prod
   image: node:20
   before_script:
     - cd frontend
     - npm ci
   script:
     - npm run build
+
+# backend:
+#   stage: backend
+#   image: python:3.12
+#   before_script:
+#     - cd backend
+#     - python -m venv .venv
+#     - source .venv/bin/activate
+#     - python -m pip install --upgrade pip
+#     - pip install -r requirements.txt
+#   script:
+#     - python manage.py makemigrations --check --dry-run
+#     - python manage.py migrate
+#     - python manage.py collectstatic --noinput
+#     - python manage.py test
+
+# frontend-build:
+#   stage: frontend-build
+#   image: node:20
+#   before_script:
+#     - cd frontend
+#     - npm ci
+#   script:
+#     - npm run build
 
