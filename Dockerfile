@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libmariadb-dev \
     libmariadb-dev-compat \
+    libpq-dev \
     build-essential \ 
     && rm -rf /var/lib/apt/lists/*
 COPY backend/requirements.txt .
