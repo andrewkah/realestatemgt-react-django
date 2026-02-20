@@ -16,11 +16,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        cd backend
-        python -m venv .venv
-        source .venv/bin/activate
         python -m pip install --upgrade pip
-        pip install pylint-django
+        pip install pylint pylint-django
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
