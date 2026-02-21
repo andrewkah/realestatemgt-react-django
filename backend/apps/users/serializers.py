@@ -1,20 +1,22 @@
 from datetime import date
-from django.forms import ValidationError
-from django.urls import reverse
-from django.db import transaction
-from apps.users.models import User, Profile
-from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-from django.contrib.auth.password_validation import validate_password
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
+from django.db import transaction
+from django.forms import ValidationError
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from apps.users.models import Profile, User
 
 from .utils import send_normal_email
 
@@ -50,14 +52,7 @@ class UserWithProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-            "id",
-            "email",
-            "username",
-            "is_active",
-            "is_staff",
-            "profile"
-        )
+        fields = ("id", "email", "username", "is_active", "is_staff", "profile")
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -274,7 +269,8 @@ class LeadCaptureSerializer(serializers.Serializer):
         if lead_type:
             if lead_type not in Profile.ROLE_VALUES:
                 raise ValidationError("Role must be one of: buyer, tenant, agent.")
-        else:raise ValidationError("Lead type is required.")
+        else:
+            raise ValidationError("Lead type is required.")
         return attrs
 
     def create(self, validated_data):
@@ -299,7 +295,7 @@ class LeadCaptureSerializer(serializers.Serializer):
                 )
                 group = Group.objects.get(name="Buyer")
                 user.groups.add(group)
-                user.refresh_from_db() 
+                user.refresh_from_db()
                 return user
         except Group.DoesNotExist:
             raise ValueError(
@@ -311,5 +307,6 @@ class LeadCaptureSerializer(serializers.Serializer):
             raise ValueError(
                 f"An error occurred while creating the lead profile: {str(e)}"
             )
+
     def to_representation(self, instance):
         return UserWithProfileSerializer(instance).data

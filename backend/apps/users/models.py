@@ -1,16 +1,14 @@
-import uuid
-from django.utils import timezone
-from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from rest_framework_simplejwt.tokens import RefreshToken
 import secrets
 import string
+import uuid
+
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.db import models
+from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # Create your models here.
@@ -39,6 +37,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
         return self._create_user(email, password, **extra_fields)
+
     @staticmethod
     def make_random_password():
         return "".join(
@@ -141,25 +140,39 @@ class LeadStatus(models.Model):
     def __str__(self):
         return self.name
 
+
 class Agent(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="agent")    
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="agent")
     is_active = models.BooleanField(default=True)
     last_assigned_at = models.DateTimeField(null=True, blank=True)
     total_leads = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.profile.first_name} {self.profile.last_name} (Agent)"
 
+
 class Buyer(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
-    lead_type = models.OneToOneField(LeadStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
+    profile = models.ForeignKey(
+        Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="buyer"
+    )
+    lead_type = models.OneToOneField(
+        LeadStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="buyer",
+    )
     preferred_property_types = models.CharField(max_length=100)
     min_bedrooms = models.IntegerField(null=True, blank=True)
-    max_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    max_price = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
     preferred_regions = models.JSONField(default=list, blank=True)
-    assigned_agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
+    assigned_agent = models.ForeignKey(
+        Agent, on_delete=models.SET_NULL, null=True, blank=True, related_name="buyer"
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -173,9 +186,18 @@ class Buyer(models.Model):
     def has_assigned_agent(self):
         return self.assigned_agent is not None
 
+
 class Tenant(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='tenant')
-    lead_type = models.OneToOneField(LeadStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='tenant')
+    profile = models.OneToOneField(
+        Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="tenant"
+    )
+    lead_type = models.OneToOneField(
+        LeadStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tenant",
+    )
     # leases = models.ManyToManyField('Lease', blank=True, related_name='tenant')
     date_of_birth = models.DateField(null=True, blank=True)
     occupation = models.CharField(max_length=100, blank=True)
@@ -187,6 +209,6 @@ class Tenant(models.Model):
 
     def __str__(self):
         return f"{self.profile.first_name} {self.profile.last_name} - {self.lead_type} (Tenant)"
-    
+
     def has_user_account(self):
         return self.user is not None
