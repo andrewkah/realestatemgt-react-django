@@ -41,6 +41,7 @@ backend-lint-job:
     - echo "Running black check..."
     - black --check .
     - echo "Running flake8 linting..."
+    - pip install flake8
     - flake8 .
 
 frontend-lint-job:

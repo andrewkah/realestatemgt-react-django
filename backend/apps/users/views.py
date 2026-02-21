@@ -1,14 +1,15 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.utils.encoding import DjangoUnicodeDecodeError, force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import generics, status, viewsets
-from rest_framework.decorators import action, api_view, permission_classes
+# from rest_framework.decorators import action
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apps.users.permissions import IsPropertyClient
+# from apps.users.permissions import IsPropertyClient
 
 from .models import OneTimePassword, Profile, User
 from .serializers import (
@@ -17,7 +18,7 @@ from .serializers import (
     LogoutSerializer,
     MyTokenObtainPairSerializer,
     PasswordResetSerializer,
-    ProfileSerializer,
+    # ProfileSerializer,
     RegisterSerializer,
     SetNewPasswordSerializer,
     UpdateUserProfileSerializer,
@@ -212,29 +213,29 @@ class LeadViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["get"])
-    def reassign(self, request, pk=None):
-        """Manually reassign lead to agent"""
-        lead = self.get_object()
-        serializer = self.get_serializer(lead, many=True)
-        agent_id = request.data.get("agent_id")
-        try:
-            agent = Agent.objects.get(id=agent_id)
-            lead.assigned_agent = agent
-            lead.save()
-            agent.total_leads += 1
-            agent.save()
-            return Response(
-                {
-                    "message": f"Lead re-assigned to {agent.profile.first_name}",
-                    "Lead": self.get_serializer(lead).data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Agent.DoesNotExist:
-            return Response(
-                {"message": "Agent not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+    # @action(detail=True, methods=["get"])
+    # def reassign(self, request, pk=None):
+    #     """Manually reassign lead to agent"""
+    #     lead = self.get_object()
+    #     serializer = self.get_serializer(lead, many=True)
+    #     agent_id = request.data.get("agent_id")
+    #     try:
+    #         agent = Agent.objects.get(id=agent_id)
+    #         lead.assigned_agent = agent
+    #         lead.save()
+    #         agent.total_leads += 1
+    #         agent.save()
+    #         return Response(
+    #             {
+    #                 "message": f"Lead re-assigned to {agent.profile.first_name}",
+    #                 "Lead": self.get_serializer(lead).data,
+    #             },
+    #             status=status.HTTP_200_OK,
+    #         )
+    #     except Agent.DoesNotExist:
+    #         return Response(
+    #             {"message": "Agent not found"}, status=status.HTTP_404_NOT_FOUND
+    #         )
 
 
 # Create your views here.
