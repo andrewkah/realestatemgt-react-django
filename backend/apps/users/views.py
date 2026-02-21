@@ -1,8 +1,10 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 # from django.shortcuts import render
 from django.utils.encoding import DjangoUnicodeDecodeError, force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import generics, status, viewsets
+
 # from rest_framework.decorators import action
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
