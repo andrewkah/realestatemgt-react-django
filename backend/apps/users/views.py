@@ -11,13 +11,23 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.users.permissions import IsPropertyClient
 
 from .models import OneTimePassword, Profile, User
-from .serializers import (LeadCaptureSerializer, LoginSerializer,
-                          LogoutSerializer, MyTokenObtainPairSerializer,
-                          PasswordResetSerializer, ProfileSerializer,
-                          RegisterSerializer, SetNewPasswordSerializer,
-                          UpdateUserProfileSerializer)
-from .utils import (load_balanced_assignment, round_robin_agent_assignment,
-                    send_otp_to_user, skill_based_assignment)
+from .serializers import (
+    LeadCaptureSerializer,
+    LoginSerializer,
+    LogoutSerializer,
+    MyTokenObtainPairSerializer,
+    PasswordResetSerializer,
+    ProfileSerializer,
+    RegisterSerializer,
+    SetNewPasswordSerializer,
+    UpdateUserProfileSerializer,
+)
+from .utils import (
+    load_balanced_assignment,
+    round_robin_agent_assignment,
+    send_otp_to_user,
+    skill_based_assignment,
+)
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
