@@ -11,16 +11,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-# from apps.users.permissions import IsPropertyClient
-
 from .models import OneTimePassword, Profile, User
 from .serializers import (
-    LeadCaptureSerializer,
+    LeadCaptureSerializer,  # ProfileSerializer,
     LoginSerializer,
     LogoutSerializer,
     MyTokenObtainPairSerializer,
     PasswordResetSerializer,
-    # ProfileSerializer,
     RegisterSerializer,
     SetNewPasswordSerializer,
     UpdateUserProfileSerializer,
@@ -31,6 +28,8 @@ from .utils import (
     send_otp_to_user,
     skill_based_assignment,
 )
+
+# from apps.users.permissions import IsPropertyClient
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
