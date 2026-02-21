@@ -48,7 +48,7 @@ backend-lint-job:
     - black .
     - echo "Running flake8 linting..."
     - pip install flake8
-    - flake8 .
+    - flake8 --exclude .venv
 
 frontend-lint-job:
   stage: lint
