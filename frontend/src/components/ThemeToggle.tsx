@@ -1,5 +1,10 @@
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid"; // Example icons
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useTheme } from "@/context/ThemeProvider";
 

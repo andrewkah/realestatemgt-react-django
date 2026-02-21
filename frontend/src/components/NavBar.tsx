@@ -101,7 +101,7 @@ const NavBar = () => {
                       >
                         {route.label}
                       </HashLink>
-                    )
+                    ),
                   )}
                   <Button
                     className="w-[110px] h-11"
@@ -141,7 +141,7 @@ const NavBar = () => {
                 >
                   {route.label}
                 </HashLink>
-              )
+              ),
             )}
           </nav>
           <div className="hidden md:flex gap-2">

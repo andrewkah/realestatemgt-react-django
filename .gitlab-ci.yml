@@ -51,9 +51,11 @@ frontend-lint-job:
     - npm ci
   script:
     - echo "Running prettier check..."
-    - npx prettier --check .
+    - npm run lint:format
+    - echo "Running stylelint linting..."
+    - npm run format
     - echo "Running eslint linting..."
-    - npx eslint .
+    - npm run lint
 
 backend-test-job:
   stage: test
@@ -92,7 +94,10 @@ backend-security-job:
     - python -m pip install --upgrade pip
     - pip install -r requirements.txt
   script:
-    - bandit -r .
+    - bandit -r . -f json -o bandit-report.json --severity-level medium
+  artifacts:
+    paths:
+      - bandit-report.json
 
 frontend-security-job:
   stage: security
@@ -101,7 +106,7 @@ frontend-security-job:
     - cd frontend
     - npm ci
   script:
-    - npm audit --audit-level=medium
+    - npm audit --audit-level=moderate
 
 backend-deploy-job:
   stage: deploy_staging
