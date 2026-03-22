@@ -143,7 +143,7 @@ staging-job:
     - mkdir -p "$HOME/.ssh"
     - cp "$SSH_PRIVATE_KEY" "$HOME/.ssh/id_rsa"
     - chmod 600 "$HOME/.ssh/id_rsa"
-    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts
+    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
       docker pull andrewkah/realestate-django-react:latest &&
@@ -168,7 +168,7 @@ deploy-prod-job:
     - mkdir -p "$HOME/.ssh"
     - cp "$SSH_PRIVATE_KEY" "$HOME/.ssh/id_rsa"
     - chmod 600 "$HOME/.ssh/id_rsa"
-    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts
+    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
   script:
     - ssh $SERVER_USER@$PROD_HOST "
       docker pull andrewkah/realestate-django-react:latest &&
