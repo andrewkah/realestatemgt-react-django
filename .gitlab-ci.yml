@@ -93,9 +93,17 @@ frontend-test-job:
 
 Build-job:
   stage: build
-  image: andrewkah/realestate-django-react:latest
+  image: docker:27.0.1
+  services:
+    - name: docker:27.0.1-dind
+      command: ["--mtu=1460"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
   script:
-    - docker build -t 
+    - docker info
+    - docker build -t "$DOCKERHUB_USERNAME"/realestate-django-react:latest .
   
 # backend-security-job:
 #   stage: security
