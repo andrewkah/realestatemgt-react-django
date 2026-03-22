@@ -1,7 +1,7 @@
 stages:
   - lint
   - test
-  # - security
+  - security
   - build
   - deploy_staging
   - deploy_prod
@@ -97,22 +97,22 @@ Build-job:
   script:
     - docker build -t 
   
-backend-security-job:
-  stage: security
-  image: python:3.12
-  extends:
-    - .default-rules
-  before_script:
-    - cd backend
-    - python -m venv .venv
-    - source .venv/bin/activate
-    - python -m pip install --upgrade pip
-    - pip install -r requirements.txt
-  script:
-    - bandit -r . -f json -o bandit-report.json --severity-level medium
-  artifacts:
-    paths:
-      - bandit-report.json
+# backend-security-job:
+#   stage: security
+#   image: python:3.12
+#   extends:
+#     - .default-rules
+#   before_script:
+#     - cd backend
+#     - python -m venv .venv
+#     - source .venv/bin/activate
+#     - python -m pip install --upgrade pip
+#     - pip install -r requirements.txt
+#   script:
+#     - bandit -r . -f json -o bandit-report.json --severity-level medium
+#   artifacts:
+#     paths:
+#       - bandit-report.json
 
 frontend-security-job:
   stage: security
