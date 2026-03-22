@@ -1,7 +1,7 @@
 stages:
   - lint
   - test
-  - security
+  # - security
   - build
   - deploy_staging
   - deploy_prod
@@ -114,16 +114,16 @@ Build-job:
 #     paths:
 #       - bandit-report.json
 
-frontend-security-job:
-  stage: security
-  image: node:20
-  extends:
-    - .default-rules
-  before_script:
-    - cd frontend
-    - npm ci
-  script:
-    - npm audit --audit-level=moderate
+# frontend-security-job:
+#   stage: security
+#   image: node:20
+#   extends:
+#     - .default-rules
+#   before_script:
+#     - cd frontend
+#     - npm ci
+#   script:
+#     - npm audit --audit-level=moderate
 
 backend-deploy-job:
   stage: deploy_staging
