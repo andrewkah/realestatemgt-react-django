@@ -186,7 +186,7 @@ class LeadViewSet(viewsets.ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 lead = serializer.save()
                 # Choose assignment strategy
-                assignment_strategy = request.date.get(
+                assignment_strategy = request.data.get(
                     "assignment_strategy", "round_robin"
                 )
                 if assignment_strategy == "round_robin":
