@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    image: andrewkah/realestate-django-react:latest
+    container_name: real_estate_app
+    restart: always
+    ports:
+      - "8085:8085"
+    env_file:
+      - ./backend/.env

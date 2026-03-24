@@ -146,10 +146,9 @@ staging-job:
     - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
-      docker pull andrewkah/realestate-django-react:latest &&
-      docker stop realestate-django-react || true &&
-      docker rm realestate-django-react || true &&
-      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      cd /app &&
+      docker compose -f docker-compose.prod.yaml pull &&
+      docker compose -f docker-compose.prod.yaml up -d
       "
   environment:
     name: staging
@@ -171,10 +170,9 @@ deploy-prod-job:
     - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
   script:
     - ssh $SERVER_USER@$PROD_HOST "
-      docker pull andrewkah/realestate-django-react:latest &&
-      docker stop realestate-django-react || true &&
-      docker rm realestate-django-react || true &&
-      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
+      cd /app &&
+      docker compose -f docker-compose.prod.yaml pull &&
+      docker compose -f docker-compose.prod.yaml up -d
       "
   environment:
     name: production
