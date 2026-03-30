@@ -51,11 +51,11 @@ export interface FeatureProps {
   location: string;
   price: string;
   image: string;
-  propertyType: 'buy' | 'rent';
+  propertyType: "buy" | "rent";
 }
 export interface TestimonialProps {
   image: string;
-name: string;
-userName: string;
-comment: string;
+  name: string;
+  userName: string;
+  comment: string;
 }

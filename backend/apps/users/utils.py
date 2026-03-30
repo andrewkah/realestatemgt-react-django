@@ -1,11 +1,13 @@
 import random
 from time import timezone
-from django.core.mail import EmailMessage
-from .models import Agent, User, OneTimePassword
+
 from django.conf import settings
-from django.db.models import F, Count
+from django.core.mail import EmailMessage
+from django.db.models import Count, F
 
 from apps.users import models
+
+from .models import Agent, OneTimePassword, User
 
 
 def generateOtp():
@@ -44,6 +46,8 @@ def send_normal_email(data):
 """
 LEAD ASSIGNMENT
 Method 1: It uses Round Robin technique to assign Agents to potential leads by distributing them evenly in a sequence. """
+
+
 def round_robin_agent_assignment(lead):
     try:
         agent = (
@@ -62,8 +66,11 @@ def round_robin_agent_assignment(lead):
         print(f"Error in round robin assignment: {e}")
         return None
 
-'''
-Method 2: It checks for the Agents with the lowest number of assigned leads and assigns the lead to that agent'''
+
+"""
+Method 2: It checks for the Agents with the lowest number of assigned leads and assigns the lead to that agent"""
+
+
 def load_balanced_assignment(lead):
     try:
         agent = (
@@ -85,11 +92,16 @@ def load_balanced_assignment(lead):
         print(f"Error in load balanced assignment: {e}")
         return None
 
-'''
-Method 3: It assigns the Agent based on their specialisation and priority. '''
+
+"""
+Method 3: It assigns the Agent based on their specialisation and priority. """
+
+
 def skill_based_assignment(lead):
     try:
-        specialisation_needed = lead.property_type if hasattr(lead, "property_type") else None
+        specialisation_needed = (
+            lead.property_type if hasattr(lead, "property_type") else None
+        )
         agent = (
             Agent.objects.filter(is_active=True, specialisation=specialisation_needed)
             .order_by("-priority_level", "total_leads")

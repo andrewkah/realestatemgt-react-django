@@ -29,7 +29,10 @@ function App() {
             path="/capture-lead/:propertyType"
             element={<LeadCaptureForm />}
           />
-          <Route path="/property-entry/:propertyType" element={ <PropertyEntryGate/>} />
+          <Route
+            path="/property-entry/:propertyType"
+            element={<PropertyEntryGate />}
+          />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />

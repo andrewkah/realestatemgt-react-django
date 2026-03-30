@@ -7,8 +7,7 @@ import dayjs from "dayjs";
 import type { JwtPayload } from "../types";
 
 // call the base url from the env file.
-const BASE_URL =
-  import.meta.env.VITE_BASE_URL;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const useAxios = (): AxiosInstance => {
   const { authTokens, setUser, setAuthTokens } = useContext(AuthContext);
@@ -94,16 +93,15 @@ const useAxios = (): AxiosInstance => {
               `${BASE_URL}/auth/token/refresh/`,
               {
                 refresh: authTokens.refresh,
-              }
+              },
             );
 
             localStorage.setItem("authTokens", JSON.stringify(response.data));
             setAuthTokens(response.data);
             setUser(jwtDecode(response.data.access));
 
-            prevRequest.headers[
-              "Authorization"
-            ] = `Bearer ${response.data.access}`;
+            prevRequest.headers["Authorization"] =
+              `Bearer ${response.data.access}`;
             return axiosInstance(prevRequest);
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);
@@ -116,7 +114,7 @@ const useAxios = (): AxiosInstance => {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
   //   axiosInstance.interceptors.response.use(
   //     (response) => {

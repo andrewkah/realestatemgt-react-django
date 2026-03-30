@@ -1,14 +1,14 @@
 import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
-    Command,
-    Frame,
-    GalleryVerticalEnd,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
+  AudioWaveform,
+  BookOpen,
+  Bot,
+  Command,
+  Frame,
+  GalleryVerticalEnd,
+  Map,
+  PieChart,
+  Settings2,
+  SquareTerminal,
 } from "lucide-react";
 import {
   Sidebar,
@@ -147,7 +147,7 @@ const data = {
       icon: Map,
     },
   ],
-}
+};
 export function AppSidebar() {
   return (
     <Sidebar>

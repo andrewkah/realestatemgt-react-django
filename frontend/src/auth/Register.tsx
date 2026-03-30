@@ -66,24 +66,28 @@ export function RegisterForm() {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const onSubmit: SubmitHandler<FormFields> = async (
-    values: z.infer<typeof formSchema>
+    values: z.infer<typeof formSchema>,
   ) => {
     console.log(values);
     const { firstName, lastName, email, password, confirmPassword } = values;
     try {
       await axios
-        .post(`${BASE_URL}/auth/register/`, {
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password,
-          confirm_password: confirmPassword,
-        },{ headers: { "Content-Type": "application/json" } })
+        .post(
+          `${BASE_URL}/auth/register/`,
+          {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            password: password,
+            confirm_password: confirmPassword,
+          },
+          { headers: { "Content-Type": "application/json" } },
+        )
         .then((response) => {
           console.log("Response:", response);
           if (response.data.success) {
             // redirect to one time password page.
-            navigate('/verify-email');
+            navigate("/verify-email");
           }
         })
         .catch((e) => {

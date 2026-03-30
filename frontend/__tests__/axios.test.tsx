@@ -147,14 +147,13 @@ describe("Axios Instance with Interceptors", () => {
                 `${BASE_URL}/auth/token/refresh/`,
                 {
                   refresh: authTokens.refresh,
-                }
+                },
               );
               localStorage.setItem("authTokens", JSON.stringify(response.data));
               setAuthTokens(response.data);
               setUser(jwtDecode(response.data.access));
-              prevRequest.headers[
-                "Authorization"
-              ] = `Bearer ${response.data.access}`;
+              prevRequest.headers["Authorization"] =
+                `Bearer ${response.data.access}`;
               return axiosInstance(prevRequest);
             } catch (refreshError) {
               setAuthTokens(null);
@@ -165,7 +164,7 @@ describe("Axios Instance with Interceptors", () => {
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
   });
 
@@ -224,7 +223,7 @@ describe("Axios Instance with Interceptors", () => {
       expect(setAuthTokens).toHaveBeenCalledWith(newTokens);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "authTokens",
-        JSON.stringify(newTokens)
+        JSON.stringify(newTokens),
       );
       expect(setUser).toHaveBeenCalled();
     });
@@ -259,7 +258,7 @@ describe("Axios Instance with Interceptors", () => {
       mockAxios.onGet("/test").reply(200, { data: "success" });
 
       await expect(axiosInstance.get("/test")).rejects.toThrow(
-        "No refresh token"
+        "No refresh token",
       );
 
       expect(setAuthTokens).toHaveBeenCalledWith(null);
@@ -335,7 +334,7 @@ describe("Axios Instance with Interceptors", () => {
       expect(setAuthTokens).toHaveBeenCalledWith(newTokens);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "authTokens",
-        JSON.stringify(newTokens)
+        JSON.stringify(newTokens),
       );
       expect(setUser).toHaveBeenCalled();
     });

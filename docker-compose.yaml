@@ -6,11 +6,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: real_estate_backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8085
     volumes:
       - ./backend:/backend
     ports:
-      - "8000:8000"
+      - "8000:8085"
     env_file:
       - ./backend/.env
     depends_on:

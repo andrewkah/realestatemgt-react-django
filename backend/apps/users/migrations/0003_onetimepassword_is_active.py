@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_user_date_joined_user_is_verified_onetimepassword'),
+        ("users", "0002_user_date_joined_user_is_verified_onetimepassword"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='onetimepassword',
-            name='is_active',
+            model_name="onetimepassword",
+            name="is_active",
             field=models.BooleanField(default=True),
         ),
     ]
