@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
-import { type User, type AuthTokens } from "../types";
+import { type User, type AuthTokens } from '../types';
 import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
@@ -54,7 +54,7 @@ export function LoginForm() {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const onSubmit: SubmitHandler<FormFields> = async (
-    values: z.infer<typeof formSchema>,
+    values: z.infer<typeof formSchema>
   ) => {
     const { email, password } = values;
 
@@ -65,12 +65,11 @@ export function LoginForm() {
         .post(
           `${BASE_URL}/auth/login/`,
           { email, password },
-          { headers: { "Content-Type": "application/json" } },
+          { headers: { "Content-Type": "application/json" } }
         )
         .then((response) => {
           console.log("response", response);
-          const { user, tokens }: { user: User; tokens: AuthTokens } =
-            response.data as { user: User; tokens: AuthTokens };
+          const { user, tokens }: { user: User; tokens: AuthTokens } = response.data as { user: User; tokens: AuthTokens };
           login(user, tokens);
           navigate("/dashboard");
         })

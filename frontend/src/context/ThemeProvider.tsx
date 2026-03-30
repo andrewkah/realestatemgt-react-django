@@ -15,7 +15,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     //   window.matchMedia("(prefers-color-scheme: light)").matches
     //   ? "light"
     //   : "dark";
-
+    
     // Always default to light
     return "light";
   });
@@ -25,10 +25,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     if (mode === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: light)")
-        .matches
-        ? "light"
-        : "dark";
+      const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
       root.classList.add(systemTheme);
       return;
     }
@@ -58,4 +55,4 @@ export const useTheme = () => {
     throw new Error("useTheme must be used within a ThemeProvider");
 
   return context;
-};
+}

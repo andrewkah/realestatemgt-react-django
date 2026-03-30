@@ -63,7 +63,7 @@ const LeadCaptureForm = () => {
       type: "text",
       attributes: {
         hidden: true,
-        value: params.propertyType === "buy" ? "buyer" : "tenant",
+        value: (params.propertyType === "buy" ? "buyer" : "tenant"),
       },
       validation: z.string(),
     },
@@ -73,22 +73,18 @@ const LeadCaptureForm = () => {
     // Add your API call or form submission logic here
     try {
       console.log(data);
-      await axios
-        .post(`${BASE_URL}/auth/lead-capture/`, data, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          const { user, tokens }: { user: User; tokens: AuthTokens } =
-            res.data as { user: User; tokens: AuthTokens };
-          login(user, tokens);
-          navigate("/dashboard");
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      await axios.post(`${BASE_URL}/auth/lead-capture/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        console.log(res);
+        const { user, tokens }: { user: User; tokens: AuthTokens } = res.data as { user: User; tokens: AuthTokens }
+        login(user, tokens);
+        navigate('/dashboard');
+      }).catch((e) => {
+        console.log(e);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -102,9 +98,8 @@ const LeadCaptureForm = () => {
         <Card className="px-4 shadow-sm">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
-              {params.propertyType === "buy"
-                ? "Buy a Property"
-                : "Rent a Property"}
+              {params.propertyType === "buy" ? "Buy a Property" : "Rent a Property"}
+              
             </CardTitle>
             <CardDescription className="text-center">
               {params.propertyType === "buy"

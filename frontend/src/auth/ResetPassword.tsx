@@ -53,9 +53,9 @@ export function ResetPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-
+  
   const onSubmit: SubmitHandler<FormFields> = async (
-    values: z.infer<typeof formSchema>,
+    values: z.infer<typeof formSchema>
   ) => {
     const { password } = values;
     try {
@@ -63,7 +63,7 @@ export function ResetPasswordForm() {
         .post(
           `${BASE_URL}/auth/password-reset/`,
           { password },
-          { headers: { "Content-Type": "application/json" } },
+          { headers: { "Content-Type": "application/json" } }
         )
         .then((response) => {
           console.log("reset response:", response);
@@ -121,9 +121,7 @@ export function ResetPasswordForm() {
                 <p className="text-sm text-muted-foreground">
                   You can now sign in with your new password.
                 </p>
-                <Button className="w-full" onClick={() => navigate("/login")}>
-                  Sign in
-                </Button>
+                <Button className="w-full" onClick={() => navigate("/login")}>Sign in</Button>
               </div>
             </CardContent>
           </Card>

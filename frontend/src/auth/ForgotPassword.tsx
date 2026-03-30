@@ -13,14 +13,7 @@ import { Building2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import z from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -35,32 +28,28 @@ export function ForgotPasswordForm() {
     defaultValues: {
       email: "",
     },
-  });
+  })
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<FormFields> = async (
-    values: z.infer<typeof formSchema>,
-  ) => {
+  const onSubmit: SubmitHandler<FormFields> = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log("Password reset request:", { values });
-      await axios
-        .post("/auth/password-reset/", { email: values.email })
-        .then((response) => {
-          console.log("Response:", response);
-          setSuccess(true);
-        })
-        .catch((e) => {
-          console.log("Error:", e.response.data);
-          form.setError("root", {
-            message: `Error: ${e.response.data.detail}`,
-          });
+      await axios.post("/auth/password-reset/", { email: values.email }).then((response) => {
+        console.log("Response:", response);
+        setSuccess(true);
+      }).catch((e) => {
+        console.log("Error:", e.response.data);
+        form.setError("root", {
+          message: `Error: ${e.response.data.detail}`,
         });
+      });
       // Simulate API call
       // await new Promise((resolve) => setTimeout(resolve, 1000));
+      
     } catch (err) {
       console.log(err);
-      form.setError("root", { message: `An error occurred: ${err}` });
+      form.setError("root",{message: `An error occurred: ${err}`});
     }
   };
 
@@ -99,8 +88,7 @@ export function ForgotPasswordForm() {
                   variant="link"
                   className="px-0 text-accent hover:text-accent/80"
                   onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/login");
+                    e.preventDefault(); navigate("/login")
                   }}
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />

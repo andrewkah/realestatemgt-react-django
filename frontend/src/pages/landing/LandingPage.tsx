@@ -375,6 +375,7 @@ const featuredProperties: FeatureProps[] = [
   },
 ];
 const FeaturedProperties = () => {
+
   return (
     <section
       id="featured-properties"

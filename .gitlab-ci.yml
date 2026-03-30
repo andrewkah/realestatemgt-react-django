@@ -1,7 +1,7 @@
 stages:
   - lint
   - test
-  # - security
+  - security
   - build
   - deploy_staging
   - deploy_prod
@@ -16,25 +16,18 @@ variables:
 default:
   interruptible: false
   cache:
-    key:
-      files:
-        - backend/requirements.txt
-        - frontend/package-lock.json
+    files:
+      - backend/requirements.txt
+      - frontend/package-lock.json
     paths:
       - backend/.cache/pip
       - backend/.venv/
       - frontend/node_modules
     policy: pull-push
 
-.default-rules:
-  rules:
-    - changes:
-      - .gitlab-ci.yml
 backend-lint-job:
   stage: lint
   image: python:3.12
-  extends:
-    - .default-rules
   before_script:
     - cd backend
     - python -m venv .venv
@@ -42,35 +35,28 @@ backend-lint-job:
     - python -m pip install --upgrade pip
     - pip install -r requirements.txt
   script:
-    - echo "Running isort..."
-    - isort .
-    - echo "Running black..."
-    - black .
+    - echo "Running isort check..."
+    - isort --check-only .
+    - echo "Running black check..."
+    - black --check .
     - echo "Running flake8 linting..."
-    - pip install flake8
-    - flake8 --exclude .venv
+    - flake8 .
 
 frontend-lint-job:
   stage: lint
   image: node:20
-  extends:
-    - .default-rules
   before_script:
     - cd frontend
     - npm ci
   script:
     - echo "Running prettier check..."
-    - npm run lint:format
-    - echo "Running stylelint linting..."
-    - npm run format
+    - npx prettier --check .
     - echo "Running eslint linting..."
-    - npm run lint
+    - npx eslint .
 
 backend-test-job:
   stage: test
   image: python:3.12
-  extends:
-    - .default-rules
   before_script:
     - cd backend
     - python -m venv .venv
@@ -83,8 +69,6 @@ backend-test-job:
 frontend-test-job:
   stage: test
   image: node:20
-  extends:
-    - .default-rules
   before_script:
     - cd frontend
     - npm ci
@@ -93,62 +77,46 @@ frontend-test-job:
 
 Build-job:
   stage: build
-  image: docker:27.0.1
-  services:
-    - name: docker:27.0.1-dind
-      command: ["--mtu=1460"]
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay2
+  image: andrewkah/realestate-django-react:latest
   script:
-    - docker info
-    - docker build -t andrewkah/realestate-django-react:latest .
+    - docker build -t 
   
-# backend-security-job:
-#   stage: security
-#   image: python:3.12
-#   extends:
-#     - .default-rules
-#   before_script:
-#     - cd backend
-#     - python -m venv .venv
-#     - source .venv/bin/activate
-#     - python -m pip install --upgrade pip
-#     - pip install -r requirements.txt
-#   script:
-#     - bandit -r . -f json -o bandit-report.json --severity-level medium
-#   artifacts:
-#     paths:
-#       - bandit-report.json
+backend-security-job:
+  stage: security
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - bandit -r .
 
-# frontend-security-job:
-#   stage: security
-#   image: node:20
-#   extends:
-#     - .default-rules
-#   before_script:
-#     - cd frontend
-#     - npm ci
-#   script:
-#     - npm audit --audit-level=moderate
+frontend-security-job:
+  stage: security
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm audit --audit-level=medium
 
-staging-job:
+backend-deploy-job:
   stage: deploy_staging
   image: alpine:latest
-  extends:
-    - .default-rules
   before_script:
     - apk add --no-cache openssh-client
-    - mkdir -p "$HOME/.ssh"
-    - cp "$SSH_PRIVATE_KEY" "$HOME/.ssh/id_rsa"
-    - chmod 600 "$HOME/.ssh/id_rsa"
-    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
-      cd /app &&
-      docker compose -f docker-compose.prod.yaml pull &&
-      docker compose -f docker-compose.prod.yaml up -d
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
       "
   environment:
     name: staging
@@ -160,27 +128,59 @@ staging-job:
 deploy-prod-job:
   stage: deploy_prod
   image: alpine:latest
-  extends:
-    - .default-rules
   before_script:
     - apk add --no-cache openssh-client
-    - mkdir -p "$HOME/.ssh"
-    - cp "$SSH_PRIVATE_KEY" "$HOME/.ssh/id_rsa"
-    - chmod 600 "$HOME/.ssh/id_rsa"
-    - ssh-keyscan -H "$SSH_HOST" >> "$HOME/.ssh/known_hosts"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
   script:
     - ssh $SERVER_USER@$PROD_HOST "
-      cd /app &&
-      docker compose -f docker-compose.prod.yaml pull &&
-      docker compose -f docker-compose.prod.yaml up -d
+      docker pull andrewkah/realestate-django-react:latest &&
+      docker stop realestate-django-react || true &&
+      docker rm realestate-django-react || true &&
+      docker run -d --name realestate-django-react -p 8085:80 andrewkah/realestate-django-react:latest
       "
   environment:
     name: production
     url: http://$PROD_HOST
+  only:
+    - dev_andrew
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
       when: manual # requires human to click play
 
+
+frontend-deploy-job:
+  stage: deploy_staging
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+
+backend-deploy-prod-job:
+  stage: deploy_prod
+  image: python:3.12
+  before_script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+  script:
+    - python manage.py migrate
+    - python manage.py collectstatic --noinput
+
+frontend-deploy-prod-job:
+  stage: deploy_prod
+  image: node:20
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
 
 # backend:
 #   stage: backend

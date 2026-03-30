@@ -18,6 +18,6 @@ const Unauthorised = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Unauthorised;
+export default Unauthorised

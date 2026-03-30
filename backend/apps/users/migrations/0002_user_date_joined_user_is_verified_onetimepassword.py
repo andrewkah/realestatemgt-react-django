@@ -9,40 +9,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("users", "0001_initial"),
+        ('users', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="user",
-            name="date_joined",
+            model_name='user',
+            name='date_joined',
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AddField(
-            model_name="user",
-            name="is_verified",
+            model_name='user',
+            name='is_verified',
             field=models.BooleanField(default=False),
         ),
         migrations.CreateModel(
-            name="OneTimePassword",
+            name='OneTimePassword',
             fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("otp", models.CharField(max_length=6, unique=True)),
-                (
-                    "user",
-                    models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('otp', models.CharField(max_length=6, unique=True)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

@@ -23,13 +23,11 @@ const contactUsFields: FieldConfig[] = [
     validation: z.email({ error: "Please enter a valid email address" }),
   },
   {
-    name: "phone",
+    name: 'phone',
     label: "Phone",
     type: "tel",
     placeholder: "+1 (123) 456-7890",
-    validation: z
-      .string()
-      .regex(phoneRegex, "Please enter a valid phone number"),
+    validation: z.string().regex(phoneRegex, "Please enter a valid phone number"),
   },
   {
     name: "message",
@@ -38,16 +36,16 @@ const contactUsFields: FieldConfig[] = [
     placeholder: "Enter your message",
     validation: z.string({ error: "Please enter valid text" }),
   },
-];
+]
 const ContactBody = () => {
-  const handleSubmit = async (data: any) => {
-    console.log(data);
-    try {
-      await axios.post("/api/contact", data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const handleSubmit = async (data: any) => {
+      console.log(data);
+      try {
+        await axios.post("/api/contact", data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
   return (
     <section className="landing-container py-24 sm:py-32" id="contactForm">
       <div className="grid lg:grid-cols-2 gap-8 place-items-center">
@@ -70,10 +68,7 @@ const ContactBody = () => {
         <Card className="px-4 shadow-sm">
           <CardContent>
             <DynamicForm
-              fields={contactUsFields}
-              onSubmit={handleSubmit}
-              submitButtonText="Submit"
-            />
+              fields={contactUsFields} onSubmit={handleSubmit} submitButtonText="Submit"/>
           </CardContent>
         </Card>
       </div>

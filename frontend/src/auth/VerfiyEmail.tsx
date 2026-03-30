@@ -47,7 +47,7 @@ export default function VerfiyEmail() {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const onSubmit: SubmitHandler<FormFields> = async (
-    values: z.infer<typeof formSchema>,
+    values: z.infer<typeof formSchema>
   ) => {
     try {
       console.log("Verify email request:", { values });
@@ -64,10 +64,10 @@ export default function VerfiyEmail() {
           }
         })
         .catch((e) => {
-          console.log("Error:", e.response.data);
-          form.setError("root", {
-            message: `Error: ${e.response.data.detail}`,
-          });
+         console.log("Error:", e.response.data);
+         form.setError("root", {
+           message: `Error: ${e.response.data.detail}`,
+         });
         });
       // Simulate API call
       // await new Promise((resolve) => setTimeout(resolve, 1000));

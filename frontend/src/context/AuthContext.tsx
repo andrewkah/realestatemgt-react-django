@@ -18,5 +18,4 @@ export const AuthContext = createContext<AuthContextType>({
   authTokens: null,
   user: null,
   setUser: () => {},
-  setAuthTokens: () => {},
-});
+  setAuthTokens: () => {},});
