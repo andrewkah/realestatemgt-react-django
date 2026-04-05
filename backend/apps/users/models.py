@@ -134,14 +134,9 @@ class OneTimePassword(models.Model):
         return f"{self.user.username}-passcode"
 
 
-class LeadStatus(models.Model):
-    name = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
+class LeadStatus(models.TextChoices):
+    BUYER = "buyer", "Buyer"
+    TENANT = "tenant", "Tenant"
 
 
 class Agent(models.Model):
@@ -160,12 +155,12 @@ class Buyer(models.Model):
     profile = models.ForeignKey(
         Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="buyer"
     )
-    lead_type = models.OneToOneField(
-        LeadStatus,
-        on_delete=models.SET_NULL,
+    lead_type = models.CharField(
+        max_length=10,
+        choices=LeadStatus.choices,
         null=True,
         blank=True,
-        related_name="buyer",
+        default=LeadStatus.BUYER,
     )
     preferred_property_types = models.CharField(max_length=100)
     min_bedrooms = models.IntegerField(null=True, blank=True)
@@ -194,12 +189,12 @@ class Tenant(models.Model):
     profile = models.OneToOneField(
         Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="tenant"
     )
-    lead_type = models.OneToOneField(
-        LeadStatus,
-        on_delete=models.SET_NULL,
+    lead_type = models.CharField(
+        max_length=10,
+        choices=LeadStatus.choices,
         null=True,
         blank=True,
-        related_name="tenant",
+        default=LeadStatus.TENANT,
     )
     # leases = models.ManyToManyField('Lease', blank=True, related_name='tenant')
     date_of_birth = models.DateField(null=True, blank=True)
