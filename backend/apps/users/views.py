@@ -12,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import OneTimePassword, Profile, User
+from .serializers import LeadCaptureSerializer  # ProfileSerializer,
 from .serializers import (
-    LeadCaptureSerializer,  # ProfileSerializer,
     LoginSerializer,
     LogoutSerializer,
     MyTokenObtainPairSerializer,

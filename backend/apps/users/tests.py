@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from apps.users.factories import UserFactory, AgentFactory, GroupFactory
+from apps.users.factories import AgentFactory, GroupFactory, UserFactory
 
 
 class LoginTests(TestCase):
@@ -24,7 +24,9 @@ class LoginTests(TestCase):
 
     def test_valid_login_returns_tokens(self):
         """A verified user can log in and receives tokens and user data."""
-        UserFactory(email="test@example.com", username="testuser", password="strongpass")
+        UserFactory(
+            email="test@example.com", username="testuser", password="strongpass"
+        )
 
         resp = self.client.post(
             self.login_url,
@@ -50,9 +52,7 @@ class LeadCaptureTests(TestCase):
             profile__phone="0778463728",
             profile__role="agent",
         )
-        GroupFactory(
-            name="Buyer"
-        )
+        GroupFactory(name="Buyer")
         user_data = {
             "email": "n2vYH@example.com",
             "first_name": "John",

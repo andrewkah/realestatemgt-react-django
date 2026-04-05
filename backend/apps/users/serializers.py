@@ -16,7 +16,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.users.models import Profile, User
+from apps.users.models import LeadStatus, Profile, User
 
 from .utils import send_normal_email
 
@@ -244,7 +244,7 @@ class LeadCaptureSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=False, allow_blank=True)
     email = serializers.EmailField()
     phone = serializers.CharField(required=False, allow_blank=True)
-    lead_type = serializers.ChoiceField(choices=Profile.ROLE_CHOICES, required=False)
+    lead_type = serializers.ChoiceField(choices=LeadStatus.choices, required=False)
 
     class Meta:
         model = Profile
@@ -267,7 +267,7 @@ class LeadCaptureSerializer(serializers.Serializer):
         if Profile.objects.filter(phone=phone).exists():
             raise ValidationError("A user with this phone number already exists.")
         if lead_type:
-            if lead_type not in Profile.ROLE_VALUES:
+            if lead_type not in LeadStatus.values:
                 raise ValidationError("Role must be one of: buyer, tenant, agent.")
         else:
             raise ValidationError("Lead type is required.")

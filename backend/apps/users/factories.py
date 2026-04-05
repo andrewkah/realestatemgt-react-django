@@ -1,7 +1,7 @@
 import factory
-
-from apps.users.models import User, Profile, Agent
 from django.contrib.auth.models import Group
+
+from apps.users.models import Agent, Profile, User
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -37,8 +37,9 @@ class AgentFactory(factory.django.DjangoModelFactory):
 
     profile = factory.SubFactory(ProfileFactory, role="agent")
 
+
 class GroupFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Group
-    
+
     name = "Buyer"
