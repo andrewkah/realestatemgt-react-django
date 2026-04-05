@@ -60,6 +60,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "EXCEPTION_HANDLER": "apps.utils.exceptions.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
@@ -187,3 +188,7 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = "bizconnectintern@gmail.com"
 EMAIL_PORT = "2525"
+
+# Storage for media
+MEDIA_URL = "/media/"
+MEDIA_ROOT = [BASE_DIR / "media"]
