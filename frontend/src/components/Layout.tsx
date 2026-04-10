@@ -1,6 +1,7 @@
 // src/components/Layout.tsx
 // import { type ReactNode } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useContext } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import {
   SidebarInset,
@@ -17,12 +18,27 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { AppSidebar } from "@/components/AppSidebar";
+import { AuthContext } from "@/context/AuthContext";
 
 // interface LayoutProps {
 //   children: ReactNode;
 // }
 
 const Layout = () => {
+  const location = useLocation();
+  const { user } = useContext(AuthContext);
+  const displayName =
+    user?.profile?.first_name || user?.profile?.last_name
+      ? `${user.profile?.first_name ?? ""} ${user.profile?.last_name ?? ""}`.trim()
+      : user?.username ?? "Operator";
+  const breadcrumbMap: Record<string, string> = {
+    dashboard: "Overview",
+    properties: "Property Management",
+  };
+  const pathParts = location.pathname.split("/").filter(Boolean);
+  const activePathLabel =
+    breadcrumbMap[pathParts[pathParts.length - 1] ?? "dashboard"] ?? "Workspace";
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -38,32 +54,26 @@ const Layout = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
+                  <BreadcrumbLink asChild>
+                    <Link to="/dashboard">REMS Workspace</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>{activePathLabel}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
           <div className="flex items-center space-x-4 me-3">
-            {/* User/Auth related items (e.g., user name, logout button) */}
-            {/* For demonstration, let's assume a dummy user menu or direct profile link */}
             <Link
               to="/profile"
               className="text-base-text hover:text-primary-light dark:hover:text-primary-dark transition-colors duration-200 hidden sm:block"
             >
-              Welcome, John!
+              Welcome, {displayName}!
             </Link>
 
-            {/* THEME TOGGLE PLACEMENT */}
             <ThemeToggle />
-            {/* End THEME TOGGLE PLACEMENT */}
-
-            {/* Mobile menu button could go here too */}
           </div>
         </header>
 
