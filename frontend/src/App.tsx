@@ -14,15 +14,16 @@ import { ResetPasswordForm } from "./auth/ResetPassword";
 import LandingPage from "./pages/landing/LandingPage";
 import ContactUs from "./pages/landing/Contact-Us";
 import LeadCaptureForm from "./pages/landing/LeadCaptureForm";
+import { Toaster } from "./components/ui/sonner";
 import PropertyEntryGate from "./components/PropertyEntryGate";
 import Unauthorised from "./components/Unauthorised";
+import PropertyManagementPage from "./pages/properties/PropertyManagementPage";
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
         <Routes>
-          {/* Routes with layout */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route
@@ -38,17 +39,20 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/verify-email" element={<VerfiyEmail />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
+          <Route path="/unauthorised" element={<Unauthorised />} />
           <Route path="*" element={<NotFound />} />
-          <Route path="*" element={<Unauthorised />} />
 
-          {/* Require Authentication */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              {/* Add the routes that need authentication */}
+              <Route
+                path="/dashboard/properties"
+                element={<PropertyManagementPage />}
+              />
             </Route>
           </Route>
         </Routes>
+        <Toaster richColors position="top-right" />
       </ThemeProvider>
     </AuthProvider>
     // <>
