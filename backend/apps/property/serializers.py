@@ -1,159 +1,205 @@
-from time import timezone
-
 from django.db import transaction
-from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import serializers
 
-from .models import (
-    Amenity,
-    Document,
-    Property,
-    PropertyAmenity,
-    PropertyCategory,
-    PropertyStatus,
-)
-
-
-class PropertySerializer(serializers.ModelSerializer):
-    amenities = serializers.PrimaryKeyRelatedField(
-        queryset=Amenity.objects.all(), many=True, required=False
-    )
-
-    class Meta:
-        model = Property
-        fields = (
-            "title",
-            "description",
-            "property_category",
-            "address",
-            "city",
-            "state",
-            "zip_code",
-            "country",
-            "price",
-            "rent_amount",
-            "deposit_amount",
-            "bedrooms",
-            "bathrooms",
-            "square_footage",
-            "year_built",
-            "status",  # Agent/Admin can set initial status like Draft or Pending Review
-        )
-
-    def validate(self, data):
-        if not data.get("property_category") or data.get("property_category") not in [
-            choice[0] for choice in PropertyCategory.choices
-        ]:
-            raise serializers.ValidationError("Property category is required.")
-        if not data.get("address"):
-            raise serializers.ValidationError("Address is required.")
-        if not data.get("city"):
-            raise serializers.ValidationError("City is required.")
-        if not data.get("country"):
-            raise serializers.ValidationError("Country is required.")
-        if not data.get("price"):
-            raise serializers.ValidationError("Price is required.")
-        if not data.get("status") or data.get("status") not in [
-            choice[0] for choice in PropertyStatus.choices
-        ]:
-            raise serializers.ValidationError("Property Status is required.")
-        if self.amenities and not all(
-            isinstance(amenity, int) for amenity in self.amenities
-        ):
-            raise serializers.ValidationError(
-                "Each amenity must be represented by its ID (integer)."
-            )
-        # Ensure that if the property is for rent, rent_amount is provided
-        if data.get("rent_amount") and not data.get("price"):
-            raise serializers.ValidationError(
-                "Rent amount cannot be set without a price."
-            )
-        return data
-
-    def create(self, validated_data):
-        try:
-            with transaction.atomic():
-                property = Property.objects.create(**validated_data)
-                property.created_by = self.context["request"].user
-                if property.status == PropertyStatus.AVAILABLE:
-                    property.published_at = timezone.now()
-                property.save()
-                if self.amenities:
-                    for amenity_id in self.amenities:
-                        amenity = get_object_or_404(Amenity, id=amenity_id)
-                        PropertyAmenity.objects.create(
-                            property=property, amenity_id=amenity
-                        )
-                return property
-        except Exception as e:
-            raise Exception(f"Error creating property: {str(e)}")
-
-    def update(self, instance, validated_data):
-        try:
-            with transaction.atomic():
-                for attr, value in validated_data.items():
-                    setattr(instance, attr, value)
-                if (
-                    instance.status == PropertyStatus.AVAILABLE
-                    and not instance.published_at
-                ):
-                    instance.published_at = timezone.now()
-                instance.save()
-                if self.amenities is not None:
-                    instance.amenities.clear()
-                    for amenity_id in self.amenities:
-                        amenity = get_object_or_404(Amenity, id=amenity_id)
-                        PropertyAmenity.objects.create(
-                            property=instance, amenity_id=amenity
-                        )
-                return instance
-        except Exception as e:
-            raise Exception(f"Error updating property: {str(e)}")
+from .models import Amenity, Document, Property, PropertyAmenity, PropertyCategory, PropertyStatus
 
 
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
-        fields = ("name", "description")
-
-    def validate(self, data):
-        if not data.get("name"):
-            raise serializers.ValidationError("Amenity name is required.")
-        return data
-
-    def create(self, validated_data):
-        return Amenity.objects.create(**validated_data)
+        fields = ("id", "name", "description")
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+    file_name = serializers.SerializerMethodField()
+    is_photo = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = Document
-        fields = ("file", "description")
+        fields = (
+            "id",
+            "file",
+            "file_url",
+            "file_name",
+            "file_type",
+            "description",
+            "is_photo",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = (
+            "id",
+            "file_type",
+            "file_url",
+            "file_name",
+            "is_photo",
+            "created_at",
+            "updated_at",
+        )
 
-    def validate(self, data):
+    def get_file_url(self, obj):
         request = self.context.get("request")
-        if request is None:
-            return data
+        if not obj.file:
+            return ""
+        if request is not None:
+            return request.build_absolute_uri(obj.file.url)
+        return obj.file.url
 
-        files = request.FILES.getlist("files")
-        descriptions = request.data.getlist("descriptions")
-        if not files and not data.get("file"):
-            raise serializers.ValidationError("Documents are required.")
+    def get_file_name(self, obj):
+        if not obj.file:
+            return ""
+        return obj.file.name.rsplit("/", maxsplit=1)[-1]
 
-        max_size = 1 * 1024 * 1024
-        if files:
-            for uploaded in files:
-                if uploaded.size > max_size:
-                    raise serializers.ValidationError(
-                        "Each file size should not exceed 1MB."
-                    )
-        else:
-            uploaded = data.get("file")
-            if uploaded and uploaded.size > max_size:
-                raise serializers.ValidationError("File size should not exceed 1MB.")
 
-        if not descriptions or len(descriptions) != len(files):
+class PropertySerializer(serializers.ModelSerializer):
+    amenities = serializers.SerializerMethodField(read_only=True)
+    amenity_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        write_only=True,
+        required=False,
+    )
+    documents = DocumentSerializer(many=True, read_only=True)
+    image_count = serializers.SerializerMethodField()
+    document_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Property
+        fields = (
+            "id",
+            "title",
+            "description",
+            "category",
+            "status",
+            "address",
+            "city",
+            "state",
+            "zip_code",
+            "country",
+            "longitude",
+            "latitude",
+            "price",
+            "rent_amount",
+            "deposit",
+            "bedrooms",
+            "bathrooms",
+            "square_footage",
+            "year_built",
+            "amenities",
+            "amenity_ids",
+            "documents",
+            "image_count",
+            "document_count",
+            "created_at",
+            "updated_at",
+            "published_at",
+        )
+        read_only_fields = (
+            "id",
+            "amenities",
+            "documents",
+            "image_count",
+            "document_count",
+            "created_at",
+            "updated_at",
+            "published_at",
+        )
+
+    def get_amenities(self, obj):
+        amenity_ids = PropertyAmenity.objects.filter(property=obj).values_list(
+            "amenity_id",
+            flat=True,
+        )
+        amenities = Amenity.objects.filter(id__in=amenity_ids).order_by("name")
+        return AmenitySerializer(amenities, many=True).data
+
+    def get_image_count(self, obj):
+        return obj.documents.filter(file_type="image").count()
+
+    def get_document_count(self, obj):
+        return obj.documents.count()
+
+    def validate_category(self, value):
+        if value not in PropertyCategory.values:
+            raise serializers.ValidationError("Invalid property category.")
+        return value
+
+    def validate_status(self, value):
+        if value not in PropertyStatus.values:
+            raise serializers.ValidationError("Invalid property status.")
+        return value
+
+    def validate(self, attrs):
+        category = attrs.get("category", getattr(self.instance, "category", None))
+        price = attrs.get("price", getattr(self.instance, "price", None))
+        rent_amount = attrs.get(
+            "rent_amount",
+            getattr(self.instance, "rent_amount", None),
+        )
+
+        if not category:
+            raise serializers.ValidationError({"category": "Property category is required."})
+
+        if price in (None, ""):
+            raise serializers.ValidationError({"price": "Price is required."})
+
+        if category == PropertyCategory.RENT and rent_amount in (None, ""):
             raise serializers.ValidationError(
-                "Descriptions for each file are required."
+                {"rent_amount": "Rent amount is required for rental properties."}
             )
-        return data
+
+        return attrs
+
+    def _sync_amenities(self, property_instance, amenity_ids):
+        amenities = list(Amenity.objects.filter(id__in=amenity_ids))
+        found_ids = {amenity.id for amenity in amenities}
+        missing_ids = sorted(set(amenity_ids) - found_ids)
+        if missing_ids:
+            raise serializers.ValidationError(
+                {"amenity_ids": f"Unknown amenities: {', '.join(map(str, missing_ids))}."}
+            )
+
+        PropertyAmenity.objects.filter(property=property_instance).delete()
+
+        if not amenity_ids:
+            return
+
+        PropertyAmenity.objects.bulk_create(
+            [
+                PropertyAmenity(property=property_instance, amenity=amenity)
+                for amenity in amenities
+            ]
+        )
+
+    def create(self, validated_data):
+        amenity_ids = validated_data.pop("amenity_ids", [])
+        request = self.context["request"]
+
+        with transaction.atomic():
+            property_instance = Property.objects.create(
+                **validated_data,
+                created_by=request.user,
+            )
+            if property_instance.status == PropertyStatus.AVAILABLE:
+                property_instance.published_at = timezone.now()
+                property_instance.save(update_fields=["published_at", "updated_at"])
+            self._sync_amenities(property_instance, amenity_ids)
+            return property_instance
+
+    def update(self, instance, validated_data):
+        amenity_ids = validated_data.pop("amenity_ids", None)
+
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+
+            if instance.status == PropertyStatus.AVAILABLE and not instance.published_at:
+                instance.published_at = timezone.now()
+
+            instance.save()
+
+            if amenity_ids is not None:
+                self._sync_amenities(instance, amenity_ids)
+
+            return instance

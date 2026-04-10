@@ -1,11 +1,12 @@
 import os
-from datetime import timezone
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse  # For get_absolute_url
+from django.utils import timezone
 
 from apps.users.models import Agent
 
@@ -80,6 +81,12 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(null=True, blank=True)
+    documents = GenericRelation(
+        "Document",
+        content_type_field="content_type",
+        object_id_field="object_id",
+        related_query_name="property",
+    )
 
     class Meta:
         verbose_name_plural = "Properties"
@@ -100,7 +107,7 @@ class Property(models.Model):
                 and original.status != self.status
             ):
                 self.published_at = timezone.now()
-        return super().save(self, *args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class Amenity(models.Model):
