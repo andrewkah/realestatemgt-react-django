@@ -13,7 +13,12 @@ urlpatterns = [
     path(
         "<int:pk>/",
         views.PropertyViewSet.as_view(
-            {"get": "retrieve", "put": "update", "delete": "destroy"}
+            {
+                "get": "retrieve",
+                "put": "update",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
         ),
         name="property-detail",
     ),
@@ -30,9 +35,21 @@ urlpatterns = [
     path(
         "amenities/<int:pk>/",
         views.AmenityViewSet.as_view(
-            {"get": "retrieve", "put": "update", "delete": "destroy"}
+            {
+                "get": "retrieve",
+                "put": "update",
+                "patch": "partial_update",
+                "delete": "destroy",
+            }
         ),
         name="amenity-detail",
+    ),
+    path(
+        "documents/<int:pk>/",
+        views.PropertyDocumentViewSet.as_view(
+            {"get": "retrieve", "patch": "partial_update", "delete": "destroy"}
+        ),
+        name="property-document-detail",
     ),
 ]
 
