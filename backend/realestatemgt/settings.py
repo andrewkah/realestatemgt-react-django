@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # local apps
     "apps.users",
     "apps.property",
+    "apps.leases",
 ]
 
 REST_FRAMEWORK = {
