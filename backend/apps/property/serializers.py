@@ -2,7 +2,14 @@ from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Amenity, Document, Property, PropertyAmenity, PropertyCategory, PropertyStatus
+from .models import (
+    Amenity,
+    Document,
+    Property,
+    PropertyAmenity,
+    PropertyCategory,
+    PropertyStatus,
+)
 
 
 class AmenitySerializer(serializers.ModelSerializer):
@@ -139,7 +146,9 @@ class PropertySerializer(serializers.ModelSerializer):
         )
 
         if not category:
-            raise serializers.ValidationError({"category": "Property category is required."})
+            raise serializers.ValidationError(
+                {"category": "Property category is required."}
+            )
 
         if price in (None, ""):
             raise serializers.ValidationError({"price": "Price is required."})
@@ -157,7 +166,9 @@ class PropertySerializer(serializers.ModelSerializer):
         missing_ids = sorted(set(amenity_ids) - found_ids)
         if missing_ids:
             raise serializers.ValidationError(
-                {"amenity_ids": f"Unknown amenities: {', '.join(map(str, missing_ids))}."}
+                {
+                    "amenity_ids": f"Unknown amenities: {', '.join(map(str, missing_ids))}."
+                }
             )
 
         PropertyAmenity.objects.filter(property=property_instance).delete()
@@ -194,7 +205,10 @@ class PropertySerializer(serializers.ModelSerializer):
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
 
-            if instance.status == PropertyStatus.AVAILABLE and not instance.published_at:
+            if (
+                instance.status == PropertyStatus.AVAILABLE
+                and not instance.published_at
+            ):
                 instance.published_at = timezone.now()
 
             instance.save()

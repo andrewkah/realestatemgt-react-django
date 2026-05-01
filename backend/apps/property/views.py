@@ -5,7 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.property.models import Amenity, Document, Property
-from apps.property.serializers import AmenitySerializer, DocumentSerializer, PropertySerializer
+from apps.property.serializers import (
+    AmenitySerializer,
+    DocumentSerializer,
+    PropertySerializer,
+)
 
 
 class PropertyViewSet(viewsets.ModelViewSet):
@@ -24,7 +28,10 @@ class PropertyViewSet(viewsets.ModelViewSet):
         return queryset.filter(created_by=self.request.user)
 
     def _ensure_manage_permission(self, property_instance):
-        if self.request.user.is_staff or property_instance.created_by == self.request.user:
+        if (
+            self.request.user.is_staff
+            or property_instance.created_by == self.request.user
+        ):
             return None
         return Response(
             {"detail": "You do not have permission to manage this property."},
@@ -49,9 +56,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
                 raise ValueError("Each file size should not exceed 1MB.")
 
             description = (
-                descriptions[index]
-                if index < len(descriptions)
-                else uploaded_file.name
+                descriptions[index] if index < len(descriptions) else uploaded_file.name
             )
             documents.append(
                 Document.objects.create(

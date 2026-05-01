@@ -16,6 +16,7 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__email", "first_name", "last_name", "location")
     ordering = ("user__email",)
 
+
 class AgentAdmin(admin.ModelAdmin):
     list_display = ("profile",)
     search_fields = (

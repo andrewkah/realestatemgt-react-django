@@ -109,7 +109,9 @@ class PropertyApiTests(APITestCase):
         detail_response = self.client.get(f"/api/v1/properties/{property_instance.id}/")
         self.assertEqual(detail_response.status_code, status.HTTP_200_OK)
         self.assertEqual(detail_response.data["document_count"], 1)
-        self.assertEqual(detail_response.data["documents"][0]["description"], "Sales brochure")
+        self.assertEqual(
+            detail_response.data["documents"][0]["description"], "Sales brochure"
+        )
 
         update_response = self.client.patch(
             f"/api/v1/properties/documents/{document_id}/",

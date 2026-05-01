@@ -1,10 +1,11 @@
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
+
 from apps.property.models import Document, Property
 from apps.users.models import Agent, Tenant, User
-from django.utils import timezone
-from django.contrib.contenttypes.fields import GenericRelation
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 # Create your models here.
 User = get_user_model()
@@ -52,9 +53,11 @@ class LeaseStatus(models.TextChoices):
 class Lease(models.Model):
     # Relationships
     real_property = models.ForeignKey(
-        Property, on_delete=models.CASCADE, related_name="leases"
+        Property, on_delete=models.CASCADE, related_name="lease"
     )
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="leases")
+    tenant = models.ForeignKey(
+        Tenant, on_delete=models.CASCADE, related_name="lease_tenant"
+    )
     lease_manager = models.ForeignKey(
         Agent,
         on_delete=models.SET_NULL,
@@ -125,7 +128,7 @@ class Lease(models.Model):
         verbose_name_plural = "Leases"
 
     def __str__(self):
-        return f"{self.lease_number} - {self.real_property.title} - {self.tenant.last_name}"
+        return f"{self.lease_number} - {self.real_property.title} - {self.tenant.profile.last_name}"
 
     def get_absolute_url(self):
         return reverse("lease_detail", kwargs={"pk": self.pk})
@@ -155,7 +158,7 @@ class Lease(models.Model):
         )
 
 
-class ContractTemaplate(models.Model):
+class ContractTemplate(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     template_content = models.TextField(
@@ -163,6 +166,13 @@ class ContractTemaplate(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="created_template",
+        blank=True,
+        null=True,
+    )
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
