@@ -30,7 +30,7 @@ class LeaseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = (
             Lease.objects.select_related("created_by")
-            .prefetch_related("property", "tenant", "documents")
+            .prefetch_related("real_property", "tenant", "documents")
             .all()
         )
         if self.request.user.is_staff:
