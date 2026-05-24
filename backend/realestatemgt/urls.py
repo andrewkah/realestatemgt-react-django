@@ -25,6 +25,7 @@ urlpatterns = [
     path("api/v1/auth/", include("apps.users.urls")),
     path("api/v1/properties/", include("apps.property.urls")),
     path("api/v1/leases/", include("apps.leases.urls")),
+    path("api/v1/maintenance/", include("apps.maintenance.urls")),
 ]
 
 if "silk" in settings.INSTALLED_APPS:

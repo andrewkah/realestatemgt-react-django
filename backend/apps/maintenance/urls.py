@@ -1,3 +1,5 @@
+from django.conf import settings  # Import settings
+from django.conf.urls.static import static  # Import static
 from apps.maintenance import views
 from django.urls import path
 
@@ -21,7 +23,7 @@ urlpatterns = [
     ),
     path(
         "<int:pk>/close/",
-        views.MaintenanceRequestViewSet.as_view({"post": "close"}),
+        views.MaintenanceRequestViewSet.as_view({"post": "close_request"}),
         name="maintenance-request-close",
     ),
     path(
@@ -42,3 +44,6 @@ urlpatterns = [
         name="vendor-detail",
     ),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,6 @@
 from apps.maintenance.models import MaintenanceRequest, MaintenanceRequestStatus, Vendor
 from apps.property.models import Document
+from apps.users.models import Tenant
 from django.db import transaction, IntegrityError
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
@@ -9,24 +10,28 @@ from django.utils import timezone
 class MaintenanceService:
     def create_request(self, request, user, validated_data):
         try:
-            if user.is_staff or user.groups.filter(name="Agent").filter():
-                tenant_profile = validated_data["tenant"]
+            # Resolve tenant based on role, then create a single request record.
+            if user.is_staff or user.groups.filter(name="Agent").exists():
+                tenant_obj = validated_data.pop("tenant")
                 validated_data["status"] = MaintenanceRequestStatus.IN_REVIEW
             else:
-                tenant_profile = user.profile
+                tenant_obj = Tenant.objects.filter(profile=user.profile).first()
+                if not tenant_obj:
+                    raise ValueError("User profile is not associated with a tenant.")
+                validated_data.pop("tenant", None)
                 validated_data["status"] = MaintenanceRequestStatus.SUBMITTED
 
-            if not tenant_profile:
+            if not tenant_obj:
                 raise ValueError("A valid tenant is required.")
 
             with transaction.atomic():
                 maintenance_request = MaintenanceRequest.objects.create(
-                    submitted_by_user=user, tenant=tenant_profile, **validated_data
+                    submitted_by_user=user, tenant=tenant_obj, **validated_data
                 )
-                request_arr = self.save_maintenance_attachments(
+                self.save_maintenance_attachments(
                     request, maintenance_request
                 )
-                return request_arr
+                return maintenance_request
 
         except IntegrityError as e:
             raise ValueError("Request failed:", str(e))
@@ -37,6 +42,10 @@ class MaintenanceService:
 
             if not files:
                 return None
+            if isinstance(maintenance_request, int):
+                maintenance_request = get_object_or_404(
+                    MaintenanceRequest, pk=maintenance_request
+                )
             property_content_type = ContentType.objects.get_for_model(
                 maintenance_request
             )
@@ -49,13 +58,13 @@ class MaintenanceService:
                 documents.append(
                     Document.objects.create(
                         content_type=property_content_type,
-                        object_id=maintenance_request,
+                        object_id=maintenance_request.pk,
                         file=uploaded_file,
                         description=f"Attachments for MR-{maintenance_request.pk}",
                         uploaded_by=request.user,
                     )
                 )
-            return list(maintenance_request, documents)
+            return documents
         except IntegrityError as e:
             raise ValueError("Attachment upload error;", str(e))
 
@@ -100,15 +109,10 @@ class MaintenanceService:
     def update_maintenance_request(self, request, pk):
         try:
             maintenance_obj = get_object_or_404(MaintenanceRequest, pk=pk)
-            if (
-                not request.user.is_staff
-                or not request.user.groups.filter(name="Agent").filter()
-            ):
-                raise IntegrityError("You are not authorised to update this request")
             with transaction.atomic():
                 for attr, value in request.data.items():
                     setattr(maintenance_obj, attr, value)
-                maintenance_obj.save(updated_fields=["updated_at"])
+                maintenance_obj.save(update_fields=["updated_at"])
                 return maintenance_obj
         except IntegrityError as e:
             raise ValueError("Maintenance update error;", str(e))
@@ -118,7 +122,7 @@ class MaintenanceService:
             maintenance_obj = get_object_or_404(MaintenanceRequest, pk=pk)
             if (
                 not request.user.is_staff
-                or not request.user.groups.filter(name="Agent").filter()
+                and not request.user.groups.filter(name="Agent").exists()
             ):
                 raise IntegrityError("You are not authorised to close this request")
             with transaction.atomic():
@@ -147,9 +151,9 @@ class VendorService:
     def assign_vendor_to_request(self, request, pk):
         try:
             maintenance_obj = get_object_or_404(MaintenanceRequest, pk=pk)
-            if (
-                not request.user.is_staff
-                or not request.user.groups.filter(name="Agent").filter()
+            if not (
+                request.user.is_staff
+                and request.user.groups.filter(name="Agent").exists()
             ):
                 raise IntegrityError(
                     "You are not authorised to assign a vendor to this request"
@@ -160,7 +164,7 @@ class VendorService:
                     raise ValueError("Vendor ID is required for assignment.")
                 maintenance_obj.assigned_to_vendor_id = vendor_id
                 maintenance_obj.save(
-                    updated_fields=["assigned_to_vendor", "updated_at"]
+                    update_fields=["assigned_to_vendor", "updated_at"]
                 )
                 return maintenance_obj
         except IntegrityError as e:
@@ -168,7 +172,7 @@ class VendorService:
 
     def create_vendor(self, user, validated_data):
         try:
-            if not user.is_staff or not user.groups.filter(name="Agent").filter():
+            if not user.is_staff and not user.groups.filter(name="Agent").exists():
                 raise IntegrityError("You are not authorised to create a vendor.")
             with transaction.atomic():
                 vendor = Vendor.objects.create(created_by=user, **validated_data)
@@ -178,7 +182,7 @@ class VendorService:
 
     def update_vendor(self, user, validated_data, pk):
         try:
-            if not user.is_staff or not user.groups.filter(name="Agent").filter():
+            if not user.is_staff and not user.groups.filter(name="Agent").exists():
                 raise IntegrityError(
                     "You are not authorised to edit the vendor details."
                 )
@@ -186,7 +190,7 @@ class VendorService:
                 vendor_obj = get_object_or_404(Vendor, pk=pk)
                 for attr, value in validated_data.items():
                     setattr(vendor_obj, attr, value)
-                vendor_obj.save(updated_fields=["updated_at"])
+                vendor_obj.save(update_fields=["updated_at"])
                 return vendor_obj
         except IntegrityError as e:
             raise ValueError("Vendor update error;", str(e))

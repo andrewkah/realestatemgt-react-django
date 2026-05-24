@@ -114,7 +114,7 @@ class MaintenanceRequest(models.Model):
             self.tenant.profile.first_name + " " + self.tenant.profile.last_name
         )
         return (
-            f"MR-{self.pk}: {self.issue_title} for {self.property} by {submitter_name}"
+            f"MR-{self.pk}: {self.issue_title} for {self.real_property} by {submitter_name}"
         )
 
     def get_absolute_url(self):
