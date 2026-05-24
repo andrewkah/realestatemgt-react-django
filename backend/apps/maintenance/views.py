@@ -1,7 +1,5 @@
-from django.shortcuts import render
 
 # Create your views here.
-from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser

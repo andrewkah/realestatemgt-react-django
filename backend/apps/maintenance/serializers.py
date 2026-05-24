@@ -2,8 +2,6 @@ from rest_framework import serializers
 from apps.maintenance.models import (
     MaintenanceRequest,
     Vendor,
-    MaintenanceRequestStatus,
-    MaintenanceRequestPriority,
 )
 from apps.users.models import Tenant
 from apps.property.models import Property
