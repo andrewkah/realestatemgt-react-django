@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from apps.maintenance.models import (
-    MaintenanceRequest,
-    Vendor,
-)
-from apps.users.models import Tenant
+
+from apps.maintenance.models import MaintenanceRequest, Vendor
 from apps.property.models import Property
+from apps.users.models import Tenant
 
 
 class MaintenanceRequestSerializer(serializers.ModelSerializer):

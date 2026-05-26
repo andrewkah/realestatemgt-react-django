@@ -1,10 +1,11 @@
+from django.contrib.contenttypes.models import ContentType
+from django.db import IntegrityError, transaction
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from apps.maintenance.models import MaintenanceRequest, MaintenanceRequestStatus, Vendor
 from apps.property.models import Document
 from apps.users.models import Tenant
-from django.db import transaction, IntegrityError
-from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 
 class MaintenanceService:
@@ -28,9 +29,7 @@ class MaintenanceService:
                 maintenance_request = MaintenanceRequest.objects.create(
                     submitted_by_user=user, tenant=tenant_obj, **validated_data
                 )
-                self.save_maintenance_attachments(
-                    request, maintenance_request
-                )
+                self.save_maintenance_attachments(request, maintenance_request)
                 return maintenance_request
 
         except IntegrityError as e:
@@ -163,9 +162,7 @@ class VendorService:
                 if not vendor_id:
                     raise ValueError("Vendor ID is required for assignment.")
                 maintenance_obj.assigned_to_vendor_id = vendor_id
-                maintenance_obj.save(
-                    update_fields=["assigned_to_vendor", "updated_at"]
-                )
+                maintenance_obj.save(update_fields=["assigned_to_vendor", "updated_at"])
                 return maintenance_obj
         except IntegrityError as e:
             raise ValueError("Vendor assignment error;", str(e))

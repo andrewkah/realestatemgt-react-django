@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.property.models import Document, Property
-from apps.users.models import Agent, Tenant, User
+from apps.users.models import Agent, Tenant
 
 # Create your models here.
 User = get_user_model()

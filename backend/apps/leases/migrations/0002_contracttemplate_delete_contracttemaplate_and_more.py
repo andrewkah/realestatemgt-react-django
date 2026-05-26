@@ -32,7 +32,11 @@ class Migration(migrations.Migration):
                 (
                     "template_content",
                     models.TextField(
-                        help_text="Use placeholders like {{ property.address }}, {{ tenant.full_name }}, {{ lease.monthly_rent }} for auto-population."
+                        help_text=(
+                            "Use placeholders like {{ property.address }}, "
+                            "{{ tenant.full_name }}, {{ lease.monthly_rent }} "
+                            "for auto-population."
+                        )
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),

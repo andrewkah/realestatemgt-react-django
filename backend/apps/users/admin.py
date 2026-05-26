@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.users.models import Agent, Buyer, LeadStatus, Profile, Tenant, User
+from apps.users.models import Agent, Buyer, Profile, Tenant, User
 
 
 # Register your models here.

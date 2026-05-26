@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
 from django.urls import reverse
 
 from apps.property.models import Document, Property
@@ -112,9 +112,7 @@ class MaintenanceRequest(models.Model):
         submitter_name = (
             self.tenant.profile.first_name + " " + self.tenant.profile.last_name
         )
-        return (
-            f"MR-{self.pk}: {self.issue_title} for {self.real_property} by {submitter_name}"
-        )
+        return f"MR-{self.pk}: {self.issue_title} for {self.real_property} by {submitter_name}"
 
     def get_absolute_url(self):
         return reverse("maintenance_request_detail", kwargs={"pk": self.pk})

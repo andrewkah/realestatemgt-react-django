@@ -1,15 +1,11 @@
-from urllib import request
 
 from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from django.template import Context, Template
 from django.utils import timezone
-from rest_framework import status
-from rest_framework.response import Response
-from urllib3 import request  # For template-based contract generation
 
 from apps.leases.models import ContractTemplate, Lease, LeaseStatus
-from apps.property.models import Document, Property, PropertyStatus
+from apps.property.models import Document, PropertyStatus
 
 
 def validate_lease_dates(lease):

@@ -1,16 +1,14 @@
-
 # Create your views here.
 from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from rest_framework import status
 from rest_framework.response import Response
 
 from apps.maintenance.models import MaintenanceRequest, Vendor
-from apps.maintenance.services import MaintenanceService, VendorService
 from apps.maintenance.serializers import MaintenanceRequestSerializer, VendorSerializer
+from apps.maintenance.services import MaintenanceService, VendorService
 from apps.property.serializers import DocumentSerializer
-from rest_framework import viewsets
 
 
 class MaintenanceRequestViewSet(viewsets.ModelViewSet):
@@ -34,7 +32,8 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
                     request, request.user, serializer.validated_data
                 )
                 return Response(
-                    self.get_serializer(request_obj).data, status=status.HTTP_201_CREATED
+                    self.get_serializer(request_obj).data,
+                    status=status.HTTP_201_CREATED,
                 )
             except ValueError as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

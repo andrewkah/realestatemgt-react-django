@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.property.models import Property
 from apps.users.models import Agent, Tenant
 
-from .models import ContractTemplate, Lease, LeaseStatus
+from .models import ContractTemplate, Lease
 
 
 class ContractTemplateSerializer(serializers.ModelSerializer):

@@ -3,15 +3,14 @@ from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.leases.models import Lease
-from apps.property.models import Amenity, Property
-from apps.users.models import Agent, LeadStatus, Tenant, User
+from apps.property.models import Property
+from apps.users.models import Agent, LeadStatus, Tenant
 
-# Create your tests here.
 User = get_user_model()
 
 

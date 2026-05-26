@@ -2,15 +2,16 @@ from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework.test import APITestCase, override_settings
 from rest_framework import status
+from rest_framework.test import APITestCase, override_settings
 
 from apps.maintenance.models import Vendor
 from apps.property.models import Property
-from apps.users.models import Tenant, LeadStatus, Agent
+from apps.users.models import Agent, LeadStatus, Tenant
 
 # Create your tests here.
 User = get_user_model()
+
 
 class MaintenanceReportModelTest(APITestCase):
     def setUp(self):
@@ -62,14 +63,18 @@ class MaintenanceReportModelTest(APITestCase):
             "real_property": self.property.id,
             "tenant": self.tenant.id,
             "issue_title": "Leaking Roof",
-            "issue_description": "The ceiling in the second bedroom leaks whenever it rains heavy. We need assistance in fixing it beacuse the room is needed for hte children.",
+            "issue_description": (
+                "The ceiling in the second bedroom leaks whenever it rains "
+                "heavy. We need assistance in fixing it beacuse the room is "
+                "needed for the children."
+            ),
         }
         document = SimpleUploadedFile(
             "maintenance_image.pdf",
             b"%PDF-1.4 mainatenance image",
             content_type="application/pdf",
         )
-        response = self.client.post(f"/api/v1/maintenance/", payload, format="json")
+        response = self.client.post("/api/v1/maintenance/", payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["issue_title"], payload["issue_title"])
         self.assertEqual(
@@ -89,9 +94,13 @@ class MaintenanceReportModelTest(APITestCase):
             "real_property": self.property.id,
             "tenant": self.tenant.id,
             "issue_title": "Leaking Roof",
-            "issue_description": "The ceiling in the second bedroom leaks whenever it rains heavy. We need assistance in fixing it beacuse the room is needed for hte children.",
+            "issue_description": (
+                "The ceiling in the second bedroom leaks whenever it rains "
+                "heavy. We need assistance in fixing it beacuse the room is "
+                "needed for hte children."
+            ),
         }
-        response = self.client.post(f"/api/v1/maintenance/", payload, format="json")
+        response = self.client.post("/api/v1/maintenance/", payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         maintenance_id = response.data["id"]
         update_payload = {"status": "in_progress"}
@@ -104,6 +113,7 @@ class MaintenanceReportModelTest(APITestCase):
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
         self.assertEqual(update_response.data["status"], "in_progress")
 
+
 class VendorModelTest(APITestCase):
     def setUp(self):
         super().setUp()
@@ -115,6 +125,7 @@ class VendorModelTest(APITestCase):
             specialization="Plumbing",
             is_active=True,
         )
+
     def test_vendor_creation(self):
         self.assertEqual(self.vendor.name, "ABC Plumbing")
         self.assertEqual(self.vendor.contact_person, "John Doe")
