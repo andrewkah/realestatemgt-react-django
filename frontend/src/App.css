@@ -1,38 +1,115 @@
-.App {
+#root {
+  /* max-width: 1280px; */
+  /* margin: 0 auto; */
+  /* padding: 2rem; */
   text-align: center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html {
+  scroll-behavior: smooth;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.landing-container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+}
+@media (min-width: 1400px) {
+  .landing-container {
+    max-width: 1400px;
+  }
+  .container {
+    max-width: 1400px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* HeroCards background shadow */
+.shadow {
+  position: absolute;
+  background: hsl(var(--primary) / 0%);
+  border-radius: 24px;
+  rotate: 35deg;
+  z-index: -1;
+  width: 260px;
+  top: 200px;
+  height: 400px;
+  filter: blur(150px);
+  will-change: transform;
+  animation: shadow-slide infinite 4s linear alternate;
+}
+
+@keyframes shadow-slide {
+  from {
+    background: hsl(var(--primary) / 20%);
+    right: 460px;
+  }
+  to {
+    background: hsl(var(--primary) / 80%);
+    right: 160px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .shadow {
+    top: 70px;
+  }
+
+  @keyframes shadow-slide {
+    from {
+      background: hsl(var(--primary) / 20%);
+      right: 460px;
+    }
+    to {
+      background: hsl(var(--primary) / 50%);
+      right: 160px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .shadow {
+    top: 70px;
+    width: 100px;
+    height: 350px;
+    filter: blur(60px);
+  }
+
+  @keyframes shadow-slide {
+    from {
+      background: hsl(var(--primary) / 20%);
+      right: 280px;
+    }
+    to {
+      background: hsl(var(--primary) / 30%);
+      right: 100px;
+    }
   }
 }
