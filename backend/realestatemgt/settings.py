@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.property",
     "apps.leases",
     "apps.maintenance",
+    "apps.finances",
 ]
 
 REST_FRAMEWORK = {
