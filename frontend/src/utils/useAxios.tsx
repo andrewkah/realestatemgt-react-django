@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import type { JwtPayload } from "../types";
 
 // call the base url from the env file.
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = import.meta.env.BASE_URL;
 
 const useAxios = (): AxiosInstance => {
   const { authTokens, setUser, setAuthTokens } = useContext(AuthContext);

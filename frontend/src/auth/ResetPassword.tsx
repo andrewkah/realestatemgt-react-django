@@ -52,7 +52,7 @@ export function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const BASE_URL = import.meta.env.BASE_URL;
 
   const onSubmit: SubmitHandler<FormFields> = async (
     values: z.infer<typeof formSchema>,

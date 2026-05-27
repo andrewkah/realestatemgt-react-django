@@ -22,7 +22,7 @@ type rentFields = {
   phone: string;
 };
 const LeadCaptureForm = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const BASE_URL = import.meta.env.BASE_URL;
   const params = useParams();
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
