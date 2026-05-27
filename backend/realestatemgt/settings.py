@@ -92,9 +92,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://realestatemgt-react-django.vercel.app",
 ]
-CORS_TRUSTED_ORIGINS = ["https://realestatemgt-react-django.vercel.app"],
 # Optional: allow credentials if you're using cookies
 CORS_ALLOW_CREDENTIALS = True
 
