@@ -29,5 +29,5 @@ urlpatterns = [
     path("api/v1/finances/", include("apps.finances.urls")),
 ]
 
-if "silk" in settings.INSTALLED_APPS:
-    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
+# if "silk" in settings.INSTALLED_APPS:
+#     urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
