@@ -94,7 +94,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "https://realestatemgt-react-django.vercel.app",
 ]
-CORS_TRUSTED_ORIGINS = ["https://realestatemgt-react-django.vercel.app"],
+CORS_TRUSTED_ORIGINS = (["https://realestatemgt-react-django.vercel.app"],)
 # Optional: allow credentials if you're using cookies
 CORS_ALLOW_CREDENTIALS = True
 
@@ -130,6 +130,17 @@ if ENVIRONMENT == "pipeline":
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "test_db.sqlite3",
             # 'NAME': ':memory:',  # In-memory database - fastest for tests
+        }
+    }
+elif ENVIRONMENT == "docker":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_NAME"),
+            "USER": env("DB_USER"),
+            "PASSWORD": env("DB_PASSWORD"),
+            "HOST": env("DB_HOST"),
+            "PORT": env("DB_PORT"),
         }
     }
 else:  # local
