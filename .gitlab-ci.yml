@@ -99,7 +99,7 @@ Build-job:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   script:
-    - docker login $CI_REGISTRY -u "$DOCKERHUB_USERNAME" -p $DOCKERHUB_TOKEN
+    - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u "$CI_REGISTRY_USER" --password-stdin
     - docker info
     - docker build -t $CI_REGISTRY_IMAGE/realestatemgt-backend:$CI_COMMIT_SHORT_SHA ./backend
     - docker build -t $CI_REGISTRY_IMAGE/realestatemgt-frontend:$CI_COMMIT_SHORT_SHA ./frontend
