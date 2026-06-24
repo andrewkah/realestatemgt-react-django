@@ -52,8 +52,10 @@ frontend-lint-job:
   image: node:20
   extends:
     - .default-rules
-  script:
+  before_script:
     - cd frontend
+    - npm ci
+  script:
     - echo "Running prettier check..."
     - npm run lint:format
     - echo "Running stylelint linting..."
