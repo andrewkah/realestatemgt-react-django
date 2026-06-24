@@ -14,12 +14,7 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import {
-  startTransition,
-  useDeferredValue,
-  useEffect,
-  useState,
-} from "react";
+import { startTransition, useDeferredValue, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -204,8 +199,12 @@ function PropertyCard({
             <div className="space-y-2">
               <div className="flex flex-wrap gap-2">
                 <Badge>{getCategoryLabel(property.category)}</Badge>
-                <Badge variant="outline">{getStatusLabel(property.status)}</Badge>
-                <Badge variant={syncState.exportReady ? "default" : "secondary"}>
+                <Badge variant="outline">
+                  {getStatusLabel(property.status)}
+                </Badge>
+                <Badge
+                  variant={syncState.exportReady ? "default" : "secondary"}
+                >
                   {syncState.label}
                 </Badge>
               </div>
@@ -221,7 +220,9 @@ function PropertyCard({
               <p className="text-muted-foreground text-xs uppercase tracking-[0.24em]">
                 Listing Price
               </p>
-              <p className="text-2xl font-semibold">{formatCurrency(property.price)}</p>
+              <p className="text-2xl font-semibold">
+                {formatCurrency(property.price)}
+              </p>
               {property.rent_amount ? (
                 <p className="text-muted-foreground text-sm">
                   Rent {formatCurrency(property.rent_amount)} / month
@@ -344,10 +345,20 @@ function DocumentRow({
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onSave} disabled={isBusy}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSave}
+            disabled={isBusy}
+          >
             {isBusy ? <LoaderCircle className="size-4 animate-spin" /> : "Save"}
           </Button>
-          <Button variant="ghost" size="sm" onClick={onDelete} disabled={isBusy}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            disabled={isBusy}
+          >
             <Trash2 className="size-4" />
           </Button>
         </div>
@@ -383,8 +394,12 @@ export function PropertyManagementPage() {
   const deferredSearch = useDeferredValue(search);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
-  const [pendingUploads, setPendingUploads] = useState<PropertyUploadDraft[]>([]);
-  const [documentDrafts, setDocumentDrafts] = useState<Record<number, string>>({});
+  const [pendingUploads, setPendingUploads] = useState<PropertyUploadDraft[]>(
+    [],
+  );
+  const [documentDrafts, setDocumentDrafts] = useState<Record<number, string>>(
+    {},
+  );
 
   const form = useForm<PropertyFormValues>({
     resolver: zodResolver(propertyFormSchema),
@@ -446,7 +461,10 @@ export function PropertyManagementPage() {
     setPendingUploads([]);
     setDocumentDrafts(
       Object.fromEntries(
-        property.documents.map((document) => [document.id, document.description]),
+        property.documents.map((document) => [
+          document.id,
+          document.description,
+        ]),
       ),
     );
     setPortfolioError(null);
@@ -474,7 +492,8 @@ export function PropertyManagementPage() {
       const nextSelectedId = options?.nextSelectedId ?? selectedPropertyId;
       if (nextSelectedId) {
         const nextProperty =
-          propertyData.find((property) => property.id === nextSelectedId) ?? null;
+          propertyData.find((property) => property.id === nextSelectedId) ??
+          null;
         if (nextProperty) {
           openProperty(nextProperty);
         } else {
@@ -566,7 +585,9 @@ export function PropertyManagementPage() {
   }
 
   async function handleDeleteProperty(propertyId: number) {
-    if (!window.confirm("Archive this property listing and remove it from REMS?")) {
+    if (
+      !window.confirm("Archive this property listing and remove it from REMS?")
+    ) {
       return;
     }
 
@@ -575,7 +596,8 @@ export function PropertyManagementPage() {
       await deleteProperty(api, propertyId);
       await loadPortfolio({
         quiet: true,
-        nextSelectedId: selectedPropertyId === propertyId ? null : selectedPropertyId,
+        nextSelectedId:
+          selectedPropertyId === propertyId ? null : selectedPropertyId,
       });
       if (selectedPropertyId === propertyId) {
         resetComposer();
@@ -623,7 +645,9 @@ export function PropertyManagementPage() {
     const currentAmenityIds = form.getValues("amenity_ids");
     const nextAmenityIds = checked
       ? [...new Set([...currentAmenityIds, amenityId])]
-      : currentAmenityIds.filter((currentAmenityId) => currentAmenityId !== amenityId);
+      : currentAmenityIds.filter(
+          (currentAmenityId) => currentAmenityId !== amenityId,
+        );
     form.setValue("amenity_ids", nextAmenityIds, { shouldValidate: true });
   }
 
@@ -675,17 +699,19 @@ export function PropertyManagementPage() {
       <section className="overflow-hidden rounded-[1.75rem] border bg-linear-to-br from-slate-950 via-emerald-950 to-teal-900 text-white shadow-xl">
         <div className="grid gap-8 px-6 py-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.9fr)] lg:px-8">
           <div className="space-y-5">
-            <Badge className="bg-white/10 text-white backdrop-blur">Property Ops</Badge>
+            <Badge className="bg-white/10 text-white backdrop-blur">
+              Property Ops
+            </Badge>
             <div className="space-y-3">
               <h1 className="max-w-3xl text-3xl font-semibold tracking-tight lg:text-5xl">
-                Centralize listings, documents, and export-ready property data in
-                one REMS workflow.
+                Centralize listings, documents, and export-ready property data
+                in one REMS workflow.
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-white/75 lg:text-base">
-                Create and maintain rental, sale, and lease inventory against the
-                live property API, keep property documents linked to the record, and
-                export clean portfolio snapshots for manual syndication to external
-                listing platforms.
+                Create and maintain rental, sale, and lease inventory against
+                the live property API, keep property documents linked to the
+                record, and export clean portfolio snapshots for manual
+                syndication to external listing platforms.
               </p>
             </div>
 
@@ -733,8 +759,8 @@ export function PropertyManagementPage() {
                   Internal REMS Sync
                 </p>
                 <p className="mt-2 font-medium text-white">
-                  Dashboard, portfolio, and document actions are all reading from the
-                  same property API surface.
+                  Dashboard, portfolio, and document actions are all reading
+                  from the same property API surface.
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
@@ -757,7 +783,9 @@ export function PropertyManagementPage() {
                 <Button
                   variant="outline"
                   className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
-                  onClick={() => handleExportJson(filteredProperties, "portfolio")}
+                  onClick={() =>
+                    handleExportJson(filteredProperties, "portfolio")
+                  }
                 >
                   <FileText className="size-4" />
                   Export Filtered JSON
@@ -792,7 +820,9 @@ export function PropertyManagementPage() {
           <select
             className={shellInputClassName}
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as StatusFilter)
+            }
           >
             <option value="ALL">All statuses</option>
             {propertyStatusOptions.map((statusOption) => (
@@ -802,7 +832,11 @@ export function PropertyManagementPage() {
             ))}
           </select>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}>
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
               {isRefreshing ? (
                 <LoaderCircle className="size-4 animate-spin" />
               ) : (
@@ -833,12 +867,15 @@ export function PropertyManagementPage() {
                 Portfolio Listings
               </h2>
               <p className="text-muted-foreground text-sm">
-                {filteredProperties.length} of {properties.length} properties in view
+                {filteredProperties.length} of {properties.length} properties in
+                view
               </p>
             </div>
             <Button
               variant="outline"
-              onClick={() => handleExportJson(filteredProperties, "filtered-portfolio")}
+              onClick={() =>
+                handleExportJson(filteredProperties, "filtered-portfolio")
+              }
             >
               <FileArchive className="size-4" />
               Export Visible Set
@@ -851,10 +888,12 @@ export function PropertyManagementPage() {
                 <div className="rounded-full bg-primary/10 p-4 text-primary">
                   <Building2 className="size-8" />
                 </div>
-                <h3 className="text-xl font-semibold">No properties match this view</h3>
+                <h3 className="text-xl font-semibold">
+                  No properties match this view
+                </h3>
                 <p className="text-muted-foreground max-w-md text-sm leading-6">
-                  Adjust your search or filters, or create the first listing to start
-                  building the internal property registry.
+                  Adjust your search or filters, or create the first listing to
+                  start building the internal property registry.
                 </p>
               </CardContent>
             </Card>
@@ -866,7 +905,9 @@ export function PropertyManagementPage() {
                 isActive={property.id === selectedPropertyId}
                 isDeleting={deletingPropertyId === property.id}
                 onEdit={() => openProperty(property)}
-                onExport={() => handleExportJson([property], `property-${property.id}`)}
+                onExport={() =>
+                  handleExportJson([property], `property-${property.id}`)
+                }
                 onDelete={() => void handleDeleteProperty(property.id)}
               />
             ))
@@ -903,12 +944,19 @@ export function PropertyManagementPage() {
             <CardContent className="space-y-6 px-6 py-6">
               <form
                 className="space-y-6"
-                onSubmit={form.handleSubmit((values) => void handleSubmit(values))}
+                onSubmit={form.handleSubmit(
+                  (values) => void handleSubmit(values),
+                )}
               >
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <label className="text-sm font-medium">Property title</label>
-                    <Input {...form.register("title")} placeholder="Kololo Terrace Villa" />
+                    <label className="text-sm font-medium">
+                      Property title
+                    </label>
+                    <Input
+                      {...form.register("title")}
+                      placeholder="Kololo Terrace Villa"
+                    />
                     {form.formState.errors.title ? (
                       <p className="text-destructive text-xs">
                         {form.formState.errors.title.message}
@@ -935,7 +983,10 @@ export function PropertyManagementPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="grid gap-2">
                       <label className="text-sm font-medium">Category</label>
-                      <select className={shellInputClassName} {...form.register("category")}>
+                      <select
+                        className={shellInputClassName}
+                        {...form.register("category")}
+                      >
                         {propertyCategoryOptions.map((categoryOption) => (
                           <option
                             key={categoryOption.value}
@@ -947,10 +998,18 @@ export function PropertyManagementPage() {
                       </select>
                     </div>
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium">Listing status</label>
-                      <select className={shellInputClassName} {...form.register("status")}>
+                      <label className="text-sm font-medium">
+                        Listing status
+                      </label>
+                      <select
+                        className={shellInputClassName}
+                        {...form.register("status")}
+                      >
                         {propertyStatusOptions.map((statusOption) => (
-                          <option key={statusOption.value} value={statusOption.value}>
+                          <option
+                            key={statusOption.value}
+                            value={statusOption.value}
+                          >
                             {statusOption.label}
                           </option>
                         ))}
@@ -961,7 +1020,10 @@ export function PropertyManagementPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="grid gap-2 md:col-span-2">
                       <label className="text-sm font-medium">Address</label>
-                      <Input {...form.register("address")} placeholder="12 Acacia Avenue" />
+                      <Input
+                        {...form.register("address")}
+                        placeholder="12 Acacia Avenue"
+                      />
                       {form.formState.errors.address ? (
                         <p className="text-destructive text-xs">
                           {form.formState.errors.address.message}
@@ -978,16 +1040,29 @@ export function PropertyManagementPage() {
                       ) : null}
                     </div>
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium">State / Region</label>
-                      <Input {...form.register("state")} placeholder="Central Region" />
+                      <label className="text-sm font-medium">
+                        State / Region
+                      </label>
+                      <Input
+                        {...form.register("state")}
+                        placeholder="Central Region"
+                      />
                     </div>
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium">ZIP / Postal code</label>
-                      <Input {...form.register("zip_code")} placeholder="N/A or local code" />
+                      <label className="text-sm font-medium">
+                        ZIP / Postal code
+                      </label>
+                      <Input
+                        {...form.register("zip_code")}
+                        placeholder="N/A or local code"
+                      />
                     </div>
                     <div className="grid gap-2">
                       <label className="text-sm font-medium">Country</label>
-                      <Input {...form.register("country")} placeholder="Uganda" />
+                      <Input
+                        {...form.register("country")}
+                        placeholder="Uganda"
+                      />
                       {form.formState.errors.country ? (
                         <p className="text-destructive text-xs">
                           {form.formState.errors.country.message}
@@ -1037,7 +1112,9 @@ export function PropertyManagementPage() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium">Square footage</label>
+                      <label className="text-sm font-medium">
+                        Square footage
+                      </label>
                       <Input
                         {...form.register("square_footage")}
                         inputMode="numeric"
@@ -1091,7 +1168,8 @@ export function PropertyManagementPage() {
                   <div>
                     <h3 className="text-lg font-semibold">Amenities</h3>
                     <p className="text-muted-foreground text-sm">
-                      Categorize the property for search, operations, and export.
+                      Categorize the property for search, operations, and
+                      export.
                     </p>
                   </div>
 
@@ -1102,7 +1180,9 @@ export function PropertyManagementPage() {
                   ) : (
                     <div className="grid gap-3 sm:grid-cols-2">
                       {amenities.map((amenity) => {
-                        const checked = form.watch("amenity_ids").includes(amenity.id);
+                        const checked = form
+                          .watch("amenity_ids")
+                          .includes(amenity.id);
 
                         return (
                           <label
@@ -1134,7 +1214,9 @@ export function PropertyManagementPage() {
                       <Input
                         placeholder="Add new amenity"
                         value={newAmenityName}
-                        onChange={(event) => setNewAmenityName(event.target.value)}
+                        onChange={(event) =>
+                          setNewAmenityName(event.target.value)
+                        }
                       />
                       <Input
                         placeholder="Short description"
@@ -1165,9 +1247,9 @@ export function PropertyManagementPage() {
                       Images and documents
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      Upload brochures, contracts, photos, floor plans, and other
-                      supporting documents. Files are linked directly to the property
-                      record in the backend.
+                      Upload brochures, contracts, photos, floor plans, and
+                      other supporting documents. Files are linked directly to
+                      the property record in the backend.
                     </p>
                   </div>
 
@@ -1263,14 +1345,17 @@ export function PropertyManagementPage() {
                       <div>
                         <p className="text-sm font-medium">Linked documents</p>
                         <p className="text-muted-foreground text-xs">
-                          Centralized document management for the selected property
+                          Centralized document management for the selected
+                          property
                         </p>
                       </div>
                       {selectedProperty.documents.map((document) => (
                         <DocumentRow
                           key={document.id}
                           document={document}
-                          value={documentDrafts[document.id] ?? document.description}
+                          value={
+                            documentDrafts[document.id] ?? document.description
+                          }
                           isBusy={busyDocumentId === document.id}
                           onChange={(value) =>
                             setDocumentDrafts((currentDrafts) => ({
@@ -1279,7 +1364,9 @@ export function PropertyManagementPage() {
                             }))
                           }
                           onSave={() => void handleDocumentSave(document.id)}
-                          onDelete={() => void handleDocumentDelete(document.id)}
+                          onDelete={() =>
+                            void handleDocumentDelete(document.id)
+                          }
                         />
                       ))}
                     </div>
@@ -1289,9 +1376,12 @@ export function PropertyManagementPage() {
                 <div className="rounded-2xl border bg-background p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium">Availability and sync</p>
+                      <p className="text-sm font-medium">
+                        Availability and sync
+                      </p>
                       <p className="text-muted-foreground text-xs">
-                        Published {formatDateTime(selectedProperty?.published_at ?? null)}
+                        Published{" "}
+                        {formatDateTime(selectedProperty?.published_at ?? null)}
                       </p>
                     </div>
                     <Badge
@@ -1319,7 +1409,11 @@ export function PropertyManagementPage() {
                     )}
                     {selectedProperty ? "Save changes" : "Create property"}
                   </Button>
-                  <Button type="button" variant="outline" onClick={resetComposer}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetComposer}
+                  >
                     Reset form
                   </Button>
                 </div>

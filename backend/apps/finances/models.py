@@ -112,11 +112,15 @@ class Payment(models.Model):
     def __str__(self):
         type_display = self.get_payment_type_display()
         if self.is_income:
-            return (f"Income: {type_display} of ${self.amount} from {self.tenant} "
-                    "for {self.real_property} on {self.payment_date.strftime('%Y-%m-%d')}")
+            return (
+                f"Income: {type_display} of ${self.amount} from {self.tenant} "
+                "for {self.real_property} on {self.payment_date.strftime('%Y-%m-%d')}"
+            )
         else:
-            return (f"Expense: {type_display} of ${self.amount} to {self.tenant}"
-                    "for {self.real_property} on {self.payment_date.strftime('%Y-%m-%d')}")
+            return (
+                f"Expense: {type_display} of ${self.amount} to {self.tenant}"
+                "for {self.real_property} on {self.payment_date.strftime('%Y-%m-%d')}"
+            )
 
     def save(self, *args, **kwargs):
         income_types = {

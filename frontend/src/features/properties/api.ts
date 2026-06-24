@@ -24,7 +24,10 @@ export async function createAmenity(
   api: AxiosInstance,
   payload: Pick<Amenity, "name" | "description">,
 ) {
-  const response = await api.post<Amenity>(`${PROPERTY_BASE_PATH}amenities/`, payload);
+  const response = await api.post<Amenity>(
+    `${PROPERTY_BASE_PATH}amenities/`,
+    payload,
+  );
   return response.data;
 }
 
@@ -60,7 +63,10 @@ export async function uploadPropertyDocuments(
   const formData = new FormData();
   uploads.forEach((upload) => {
     formData.append("files", upload.file);
-    formData.append("descriptions", upload.description.trim() || upload.file.name);
+    formData.append(
+      "descriptions",
+      upload.description.trim() || upload.file.name,
+    );
   });
 
   const response = await api.post<PropertyDocument[]>(
@@ -95,7 +101,8 @@ export async function deletePropertyDocument(
 }
 
 export function getApiErrorMessage(error: unknown) {
-  const fallbackMessage = "Something went wrong while talking to the property API.";
+  const fallbackMessage =
+    "Something went wrong while talking to the property API.";
 
   if (
     typeof error === "object" &&
@@ -118,7 +125,9 @@ export function getApiErrorMessage(error: unknown) {
       return responseData.detail;
     }
 
-    const firstEntry = responseData ? Object.entries(responseData)[0] : undefined;
+    const firstEntry = responseData
+      ? Object.entries(responseData)[0]
+      : undefined;
     if (firstEntry) {
       const [, value] = firstEntry;
       if (Array.isArray(value)) {

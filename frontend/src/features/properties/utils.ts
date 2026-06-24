@@ -151,8 +151,8 @@ export function buildPropertyPayload(
 
 export function getCategoryLabel(category: PropertyCategory) {
   return (
-    propertyCategoryOptions.find((option) => option.value === category)?.label ??
-    category
+    propertyCategoryOptions.find((option) => option.value === category)
+      ?.label ?? category
   );
 }
 
@@ -164,7 +164,9 @@ export function getStatusLabel(status: PropertyStatus) {
 }
 
 export function getPrimaryImageUrl(property: PropertyRecord) {
-  return property.documents.find((document) => document.is_photo)?.file_url ?? "";
+  return (
+    property.documents.find((document) => document.is_photo)?.file_url ?? ""
+  );
 }
 
 export function getPropertySyncState(property: PropertyRecord) {

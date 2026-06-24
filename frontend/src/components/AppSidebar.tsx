@@ -24,7 +24,7 @@ export function AppSidebar() {
   const displayName =
     user?.profile?.first_name || user?.profile?.last_name
       ? `${user.profile?.first_name ?? ""} ${user.profile?.last_name ?? ""}`.trim()
-      : user?.username ?? "REMS User";
+      : (user?.username ?? "REMS User");
 
   const navMain = [
     {

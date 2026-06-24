@@ -30,14 +30,15 @@ const Layout = () => {
   const displayName =
     user?.profile?.first_name || user?.profile?.last_name
       ? `${user.profile?.first_name ?? ""} ${user.profile?.last_name ?? ""}`.trim()
-      : user?.username ?? "Operator";
+      : (user?.username ?? "Operator");
   const breadcrumbMap: Record<string, string> = {
     dashboard: "Overview",
     properties: "Property Management",
   };
   const pathParts = location.pathname.split("/").filter(Boolean);
   const activePathLabel =
-    breadcrumbMap[pathParts[pathParts.length - 1] ?? "dashboard"] ?? "Workspace";
+    breadcrumbMap[pathParts[pathParts.length - 1] ?? "dashboard"] ??
+    "Workspace";
 
   return (
     <SidebarProvider>

@@ -1,4 +1,10 @@
-import { ArrowRight, Building2, FileStack, RefreshCw, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  FileStack,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -74,18 +80,25 @@ export function Dashboard() {
             <Badge variant="secondary">REMS Overview</Badge>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight">
-                Property operations are now running through one synced workspace.
+                Property operations are now running through one synced
+                workspace.
               </h1>
               <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-                Monitor listing health, document coverage, and export readiness from
-                the same API-backed portfolio that powers the property management
-                module.
+                Monitor listing health, document coverage, and export readiness
+                from the same API-backed portfolio that powers the property
+                management module.
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={() => void loadDashboard(true)} disabled={isRefreshing}>
-              <RefreshCw className={`size-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            <Button
+              variant="outline"
+              onClick={() => void loadDashboard(true)}
+              disabled={isRefreshing}
+            >
+              <RefreshCw
+                className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
             <Button asChild>
@@ -125,7 +138,9 @@ export function Dashboard() {
             <p className="text-muted-foreground text-xs uppercase tracking-[0.24em]">
               Live Listings
             </p>
-            <p className="mt-3 text-3xl font-semibold">{isLoading ? "..." : liveListings}</p>
+            <p className="mt-3 text-3xl font-semibold">
+              {isLoading ? "..." : liveListings}
+            </p>
             <p className="text-muted-foreground mt-2 text-sm">
               Inventory currently marked available
             </p>
@@ -136,7 +151,9 @@ export function Dashboard() {
             <p className="text-muted-foreground text-xs uppercase tracking-[0.24em]">
               Draft Queue
             </p>
-            <p className="mt-3 text-3xl font-semibold">{isLoading ? "..." : draftListings}</p>
+            <p className="mt-3 text-3xl font-semibold">
+              {isLoading ? "..." : draftListings}
+            </p>
             <p className="text-muted-foreground mt-2 text-sm">
               Listings still being prepared for release
             </p>
@@ -147,7 +164,9 @@ export function Dashboard() {
             <p className="text-muted-foreground text-xs uppercase tracking-[0.24em]">
               Export Ready
             </p>
-            <p className="mt-3 text-3xl font-semibold">{isLoading ? "..." : exportReady}</p>
+            <p className="mt-3 text-3xl font-semibold">
+              {isLoading ? "..." : exportReady}
+            </p>
             <p className="text-muted-foreground mt-2 text-sm">
               Records ready for manual syndication
             </p>
@@ -172,7 +191,9 @@ export function Dashboard() {
                 <div>
                   <div className="flex flex-wrap gap-2">
                     <Badge>{getCategoryLabel(property.category)}</Badge>
-                    <Badge variant="outline">{getStatusLabel(property.status)}</Badge>
+                    <Badge variant="outline">
+                      {getStatusLabel(property.status)}
+                    </Badge>
                   </div>
                   <p className="mt-3 font-semibold">{property.title}</p>
                   <p className="text-muted-foreground text-sm">
@@ -180,7 +201,9 @@ export function Dashboard() {
                   </p>
                 </div>
                 <div className="text-left md:text-right">
-                  <p className="font-semibold">{formatCurrency(property.price)}</p>
+                  <p className="font-semibold">
+                    {formatCurrency(property.price)}
+                  </p>
                   <p className="text-muted-foreground text-sm">
                     {property.document_count} docs linked
                   </p>
@@ -189,8 +212,8 @@ export function Dashboard() {
             ))}
             {!isLoading && properties.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                No property listings yet. Open the property workspace to create the
-                first record.
+                No property listings yet. Open the property workspace to create
+                the first record.
               </p>
             ) : null}
           </CardContent>
@@ -212,7 +235,8 @@ export function Dashboard() {
                 <div>
                   <p className="font-medium">Internal sync</p>
                   <p className="text-muted-foreground text-sm">
-                    Portfolio metrics and listing actions share the same data source.
+                    Portfolio metrics and listing actions share the same data
+                    source.
                   </p>
                 </div>
               </div>
@@ -225,7 +249,8 @@ export function Dashboard() {
                 <div>
                   <p className="font-medium">Linked documents</p>
                   <p className="text-muted-foreground text-sm">
-                    {isLoading ? "..." : totalDocuments} files are attached across the portfolio.
+                    {isLoading ? "..." : totalDocuments} files are attached
+                    across the portfolio.
                   </p>
                 </div>
               </div>
@@ -238,7 +263,8 @@ export function Dashboard() {
                 <div>
                   <p className="font-medium">Property workspace</p>
                   <p className="text-muted-foreground text-sm">
-                    Create, edit, upload, and export from the same operator surface.
+                    Create, edit, upload, and export from the same operator
+                    surface.
                   </p>
                 </div>
               </div>

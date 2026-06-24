@@ -50,7 +50,10 @@ export function NavMain({
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive || item.items?.some((subItem) => isRouteActive(subItem.url))}
+            defaultOpen={
+              item.isActive ||
+              item.items?.some((subItem) => isRouteActive(subItem.url))
+            }
             className="group/collapsible"
           >
             <SidebarMenuItem>
@@ -70,7 +73,10 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild isActive={isRouteActive(subItem.url)}>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={isRouteActive(subItem.url)}
+                      >
                         <NavLink to={subItem.url}>
                           <span>{subItem.title}</span>
                         </NavLink>

@@ -16,10 +16,7 @@ variables:
 default:
   interruptible: false
   cache:
-    key:
-      files:
-        - backend/requirements.txt
-        - frontend/package-lock.json
+    key: "node-pip-cache"
     paths:
       - backend/.cache/pip
       - backend/.venv/
@@ -48,21 +45,18 @@ backend-lint-job:
     - black .
     - echo "Running flake8 linting..."
     - pip install flake8
-    - flake8 --exclude .venv
+    - flake8 --exclude=venv,migrations
 
 frontend-lint-job:
   stage: lint
   image: node:20
   extends:
     - .default-rules
-  before_script:
-    - cd frontend
-    - npm ci
   script:
     - echo "Running prettier check..."
     - npm run lint:format
     - echo "Running stylelint linting..."
-    - npm run format
+    - npm run format --write
     - echo "Running eslint linting..."
     - npm run lint
 

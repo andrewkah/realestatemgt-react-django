@@ -124,9 +124,7 @@ class FinanceServiceTests(APITestCase):
             "description": "Online rent payment",
             "status": PaymentStatus.COMPLETED,
         }
-        record_payment(
-            payment_data, self.staff_user, invoice_ids=[invoice.id]
-        )
+        record_payment(payment_data, self.staff_user, invoice_ids=[invoice.id])
 
         # Verify that invoice status becomes PAID and amount_due is 0
         invoice.refresh_from_db()
