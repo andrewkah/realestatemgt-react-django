@@ -1,9 +1,21 @@
 services:
-  app:
-    image: andrewkah/realestate-django-react:latest
-    container_name: real_estate_app
+  backend:
+    image: registry.gitlab.com/andrewkah/realestatemgt-backend:staging
+    container_name: real_estate_backend
+    restart: always
+  frontend:
+    image: registry.gitlab.com/andrewkah/realestatemgt-frontend:staging
+    container_name: real_estate_frontend
+    restart: always
+  db:
+    image: postgres
+    container_name: real_estate_db
+    restart: always
+  nginx:
+    image: nginx:alpine
+    container_name: real_estate_nginx
     restart: always
     ports:
-      - "8085:8085"
-    env_file:
-      - ./backend/.env
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf

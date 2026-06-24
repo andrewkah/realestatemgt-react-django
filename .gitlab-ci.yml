@@ -9,7 +9,7 @@ stages:
   # - frontend-build
 
 variables:
-  CI_COMMIT_REF_SLUG: master
+  CI_COMMIT_SHORT_SHA: master
   ENVIRONMENT: pipeline
   PYTHONUNBUFFERED: 1
 
@@ -93,17 +93,27 @@ frontend-test-job:
 
 Build-job:
   stage: build
-  image: docker:27.0.1
+  image: docker:latest
   services:
-    - name: docker:27.0.1-dind
+    - name: docker:dind
       command: ["--mtu=1460"]
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
   script:
+    - docker login $CI_REGISTRY -u "$DOCKERHUB_USERNAME" -p $DOCKERHUB_TOKEN
     - docker info
-    - docker build -t andrewkah/realestate-django-react:latest .
+    - docker build -t $CI_REGISTRY_IMAGE/realestatemgt-backend:$CI_COMMIT_SHORT_SHA ./backend
+    - docker build -t $CI_REGISTRY_IMAGE/realestatemgt-frontend:$CI_COMMIT_SHORT_SHA ./frontend
+    - docker push $CI_REGISTRY_IMAGE/realestatemgt-backend:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE/realestatemgt-frontend:$CI_COMMIT_SHORT_SHA
+    - docker tag $CI_REGISTRY_IMAGE/realestatemgt-backend:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/realestatemgt-backend:staging
+    - docker tag $CI_REGISTRY_IMAGE/realestatemgt-frontend:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE/realestatemgt-frontend:staging
+    - docker push $CI_REGISTRY_IMAGE/realestatemgt-backend:staging
+    - docker push $CI_REGISTRY_IMAGE/realestatemgt-frontend:staging
+  only:
+    - dev_andrew
   
 # backend-security-job:
 #   stage: security
