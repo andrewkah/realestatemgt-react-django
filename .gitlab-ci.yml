@@ -23,10 +23,10 @@ default:
       - frontend/node_modules
     policy: pull-push
 
-.default-rules:
-  rules:
-    - changes:
-      - .gitlab-ci.yml
+# .default-rules:
+#   rules:
+#     - changes:
+#       - .gitlab-ci.yml
 backend-lint-job:
   stage: lint
   image: python:3.12
@@ -110,7 +110,7 @@ Build-job:
     - docker push $CI_REGISTRY_IMAGE/realestatemgt-backend:staging
     - docker push $CI_REGISTRY_IMAGE/realestatemgt-frontend:staging
   only:
-    - dev_andrew
+    - staging
   
 # backend-security-job:
 #   stage: security
@@ -154,15 +154,14 @@ staging-job:
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$STAGING_HOST "
       cd /app &&
-      docker compose -f docker-compose.prod.yaml pull &&
-      docker compose -f docker-compose.prod.yaml up -d
+      docker compose -f docker-compose.staging.yaml pull &&
+      docker compose -f docker-compose.staging.yaml up -d
       "
   environment:
     name: staging
     url: http://$STAGING_HOST
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
-      when: manual # requires human to click play
+  only:
+    - staging
 
 deploy-prod-job:
   stage: deploy_prod
@@ -185,31 +184,8 @@ deploy-prod-job:
     name: production
     url: http://$PROD_HOST
   rules:
-    - if: '$CI_COMMIT_BRANCH == "dev_andrew"'
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push" && $CI_ENVIRONMENT_SLUG == "staging"'
       when: manual # requires human to click play
-
-
-# backend:
-#   stage: backend
-#   image: python:3.12
-#   before_script:
-#     - cd backend
-#     - python -m venv .venv
-#     - source .venv/bin/activate
-#     - python -m pip install --upgrade pip
-#     - pip install -r requirements.txt
-#   script:
-#     - python manage.py makemigrations --check --dry-run
-#     - python manage.py migrate
-#     - python manage.py collectstatic --noinput
-#     - python manage.py test
-
-# frontend-build:
-#   stage: frontend-build
-#   image: node:20
-#   before_script:
-#     - cd frontend
-#     - npm ci
-#   script:
-#     - npm run build
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push" && $CI_ENVIRONMENT_SLUG == "production"'
+      when: manual # requires human to click play
 
